@@ -2,10 +2,10 @@ import sql from "./_db.ts";
 import CalendarEvent from "./calendarEvent.ts";
 
 interface ICalendarEventRow {
-    id: number,
-    description: string,
-    timestamp: Date,
-    broadcasted: boolean
+  id: number;
+  description: string;
+  timestamp: Date;
+  broadcasted: boolean;
 }
 
 export default abstract class CalendarDatabase {
@@ -23,7 +23,6 @@ export default abstract class CalendarDatabase {
       ORDER BY timestamp;
     `;
 
-    console.log(rows);
     return rows;
   }
 }
