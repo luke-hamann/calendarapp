@@ -1,0 +1,25 @@
+{% extends './_base.html' %}
+
+{% block title %}Subscribe{% endblock %}
+
+{% block content %}
+    <h1>
+        Subscribe
+    </h1>
+    <form action="/subscribe/" method="post">
+        {% if error %}
+            <div>
+                {{ error }}
+            </div>
+        {% endif %}
+        <div>
+            <input type="password" name="target" />
+        </div>
+        <div>
+            <input type="submit" value="Subscribe" />
+        </div>
+    </form>
+    <p>
+        Accepted: Email, Discord webhook
+    </p>
+{% endblock %}

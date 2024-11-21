@@ -1,6 +1,19 @@
-{% extends './_base.html' %} {% block content %} {% for calendarEvent in
-calendarEvents %}
-<div>
-  {{ calendarEvent.timestamp }} {{ calendarEvent.description }}
-</div>
-{% endfor %} {% endblock %}
+{% extends './_base.html' %}
+
+{% block title %}Calendar{% endblock %}
+
+{% block content %}
+  <h1>
+    Calendar
+  </h1>
+  {% for calendarEvent in calendarEvents %}
+    <div>
+      <kbd>
+        {{ calendarEvent.timestamp.toString().slice(0, 24) }}
+      </kbd>
+      <span>
+        {{ calendarEvent.description }}
+      </span>
+    </div>
+  {% endfor %}
+{% endblock %}
