@@ -21,7 +21,7 @@ while (running) {
   for await (const [row] of cursor) {
     if (!queues.includes(row.subscriptiontype)) continue;
     const promise = channel.publish(
-      { routingKey: row.subscriptionType },
+      { routingKey: row.subscriptiontype },
       { contentType: "application/json" },
       new TextEncoder().encode(JSON.stringify(row))
     );

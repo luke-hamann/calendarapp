@@ -1,11 +1,16 @@
 import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
 import IMessage from "../models/message.ts";
+import CalendarDatabase from "../../models/calendarDatabase.ts";
 
-function handler(message: IMessage): void {
+const kv = await Deno.openKv();
+
+async function handler(message: IMessage): Promise<void> {
   const url: string = message.subscriptionurl;
   const webhookContent: string = JSON.stringify({
     content: message.eventdescription
   });
+
+  if ((await kv.get([url])).value != null) return;
 
   fetch(url, {
     method: "POST",
@@ -14,6 +19,12 @@ function handler(message: IMessage): void {
     },
     body: webhookContent
   })
+  .then(async (response) => {
+    if (response.status == 401) {
+      await CalendarDatabase.deleteSubscriptionByUrl(url);
+      kv.set([url], "bad");
+    }
+  });
 }
 
 // deno-lint-ignore no-var
@@ -31,7 +42,7 @@ while (running) {
     { queue: queueName },
     async (args, _props, data) => {
       const json = JSON.parse(new TextDecoder().decode(data));
-      handler(json);
+      await handler(json);
       await channel.ack({ deliveryTag: args.deliveryTag });
     }
   );

@@ -15,18 +15,11 @@
       </ul>
     {% endif %}
     <div>
-      <label for="date">
-        Date
+      <label for="datetime">
+        Date/Time
       </label>
-      <input type="date" name="date" id="date"
-        value="{% if calendarEventForm %}{{ calendarEventForm.date }}{% endif %}"/>
-    </div>
-    <div>
-      <label for="time">
-        Time
-      </label>
-      <input type="time" name="time" id="time" step="1"
-        value="{% if calendarEventForm %}{{ calendarEventForm.time }}{% endif %}" />
+      <input type="datetime-local" name="datetime" id="datetime"
+        value="{% if calendarEventForm %}{{ calendarEventForm.datetime }}{% endif %}"/>
     </div>
     <div>
       <label for="description">

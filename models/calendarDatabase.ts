@@ -102,6 +102,13 @@ export default abstract class CalendarDatabase {
     `;
   }
 
+  public static async deleteSubscriptionByUrl(url: string): Promise<void> {
+    await sql`
+      DELETE FROM subscriptions
+      WHERE url = ${url}
+    `;
+  }
+
   public static async isValidLogin(user: User) : Promise<boolean> {
     const results = await sql`
       SELECT *
@@ -124,7 +131,7 @@ export default abstract class CalendarDatabase {
         Subscriptions.url subscriptionUrl
       FROM Events, Subscriptions
       WHERE Events.timestamp <= to_timestamp(${timestamp}) AND
-        Events.broadcast = false
+        Events.broadcast = true
     `;
   }
 
