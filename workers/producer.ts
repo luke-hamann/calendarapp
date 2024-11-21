@@ -27,7 +27,7 @@ while (running) {
     );
     promises.push(promise);
   }
-  promises.push(CalendarDatabase.markEventsAsBroadcasted(now));
+  promises.push(CalendarDatabase.markEventsAsBroadcast(now));
   await Promise.all(promises);
 }
 

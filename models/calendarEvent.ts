@@ -2,17 +2,17 @@ export default class CalendarEvent {
   id: number;
   description: string;
   timestamp: Date;
-  broadcasted: boolean;
+  broadcast: boolean;
 
   constructor(
     id: number,
     description: string,
     timestamp: Date,
-    broadcasted: boolean,
+    broadcast: boolean,
   ) {
     this.id = id;
     this.description = description;
     this.timestamp = timestamp;
-    this.broadcasted = broadcasted;
+    this.broadcast = broadcast;
   }
 }

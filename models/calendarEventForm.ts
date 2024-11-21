@@ -5,14 +5,14 @@ export default class CalendarEventForm {
   date: string = '';
   time: string = '';
   description: string = '';
-  broadcasted: boolean = false;
+  broadcast: boolean = false;
 
   public static fromParams(params: URLSearchParams) : CalendarEventForm {
     const form = new CalendarEventForm();
     form.date = params.get("date") ?? "";
     form.time = params.get("time") ?? "";
     form.description = params.get("description") ?? "";
-    form.broadcasted = params.has("broadcasted");
+    form.broadcast = params.has("broadcast");
     return form;
   }
 
@@ -21,7 +21,7 @@ export default class CalendarEventForm {
     form.date = calendarEvent.timestamp.toISOString().slice(0, 10);
     form.time = calendarEvent.timestamp.toISOString().slice(11, 19);
     form.description = calendarEvent.description;
-    form.broadcasted = calendarEvent.broadcasted;
+    form.broadcast = calendarEvent.broadcast;
     return form;
   }
 
@@ -55,7 +55,7 @@ export default class CalendarEventForm {
       0,
       this.description,
       new Date(`${this.date}T${this.time}`),
-      this.broadcasted
+      this.broadcast
     );
   }
 }

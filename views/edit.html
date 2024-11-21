@@ -25,19 +25,19 @@
       <label for="time">
         Time
       </label>
-      <input type="time" name="time" id="time"
+      <input type="time" name="time" id="time" step="1"
         value="{% if calendarEventForm %}{{ calendarEventForm.time }}{% endif %}" />
     </div>
     <div>
       <label for="description">
         Description
       </label>
-      <textarea name="description" id="description"
-        >{% if calendarEventForm %}{{ calendarEventForm.description }}{% endif %}</textarea>
+      <input type="text" name="description" id="description"
+        value="{% if calendarEventForm %}{{ calendarEventForm.description }}{% endif %}" />
     </div>
     <div>
       <input type="checkbox" name="broadcast" id="broadcast"
-        {% if calendarEventForm and calendarEventForm.broadcasted %}checked{% endif %} />
+        {% if calendarEventForm and calendarEventForm.broadcast %}checked{% endif %} />
       <label for="broadcast">
         Broadcast
       </label>

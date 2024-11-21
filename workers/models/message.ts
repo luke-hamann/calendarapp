@@ -2,7 +2,7 @@ export default interface IMessage {
   eventid: number,
   eventdescription: string,
   eventtimestamp: string,
-  eventbroadcasted: boolean,
+  eventbroadcast: boolean,
   subscriptionid: number,
   subscriptiontype: string,
   subscriptionurl: string

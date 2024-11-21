@@ -7,20 +7,20 @@ interface ICalendarEventRow {
   id: number;
   description: string;
   timestamp: Date;
-  broadcasted: boolean;
+  broadcast: boolean;
 }
 
 export default abstract class CalendarDatabase {
   public static async getEvent(id: number): Promise<CalendarEvent> {
     const rows = await sql`
-      SELECT id, description, timestamp, broadcasted
+      SELECT id, description, timestamp, broadcast
       FROM Events
       WHERE id = ${id}
     ` as {
       id: number,
       description: string,
       timestamp: string,
-      broadcasted: string
+      broadcast: string
     }[];
 
     if (rows.length == 0) throw new Error("Event does not exist");
@@ -30,7 +30,7 @@ export default abstract class CalendarDatabase {
       row['id'],
       row['description'],
       new Date(row['timestamp']),
-      (row['broadcasted'] == 'true' ? true : false)
+      (row['broadcast'] == 'true' ? true : false)
     );
   }
 
@@ -40,7 +40,7 @@ export default abstract class CalendarDatabase {
     day: number = 0,
   ): Promise<CalendarEvent[]> {
     const rows = await sql`
-      SELECT id, description, timestamp, broadcasted
+      SELECT id, description, timestamp, broadcast
       FROM Events
       WHERE (${year} = 0 OR date_part('year', timestamp) = ${year}) AND
         (${month} = 0 OR date_part('month', timestamp) = ${month}) AND
@@ -50,22 +50,22 @@ export default abstract class CalendarDatabase {
       id: number,
       description: string,
       timestamp: string,
-      broadcasted: string
+      broadcast: string
     }[];
 
     return rows.map((row) => new CalendarEvent(
-      row['id'], row['description'], new Date(row['timestamp']), (row['broadcasted'] == 'true' ? true : false)
+      row['id'], row['description'], new Date(row['timestamp']), (row['broadcast'] == 'true' ? true : false)
     ));
   }
 
   public static async addEvent(calendarEvent: CalendarEvent) : Promise<void> {
     await sql`
       INSERT INTO Events
-        (description, timestamp, broadcasted)
+        (description, timestamp, broadcast)
       VALUES (
         ${calendarEvent.description},
         ${calendarEvent.timestamp},
-        ${calendarEvent.broadcasted}
+        ${calendarEvent.broadcast}
       )
     `;
   }
@@ -75,7 +75,7 @@ export default abstract class CalendarDatabase {
       UPDATE Events
       SET description = ${calendarEvent.description},
         timestamp = ${calendarEvent.timestamp},
-        broadcasted = ${calendarEvent.broadcasted}
+        broadcast = ${calendarEvent.broadcast}
       WHERE id = ${calendarEvent.id}
     `;
   }
@@ -118,21 +118,21 @@ export default abstract class CalendarDatabase {
         Events.id eventId,
         Events.description eventDescription,
         Events.timestamp eventTimestamp,
-        Events.broadcasted eventBroadcasted,
+        Events.broadcast eventBroadcast,
         Subscriptions.id subscriptionId,
         Subscriptions.type subscriptionType,
         Subscriptions.url subscriptionUrl
       FROM Events, Subscriptions
       WHERE Events.timestamp <= to_timestamp(${timestamp}) AND
-        Events.broadcasted = false
+        Events.broadcast = false
     `;
   }
 
-  public static async markEventsAsBroadcasted(timestamp: number): Promise<void> {
+  public static async markEventsAsBroadcast(timestamp: number): Promise<void> {
     await sql`
       UPDATE Events
-      SET broadcasted = true
-      WHERE broadcasted = false AND
+      SET broadcast = false
+      WHERE broadcast = true AND
         Events.timestamp <= to_timestamp(${timestamp})
     `;
   }

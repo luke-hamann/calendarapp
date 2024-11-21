@@ -1,4 +1,4 @@
-import { Application, Router } from "jsr:@oak/oak";
+import { Application, Router, send } from "jsr:@oak/oak";
 import nunjucks from "npm:nunjucks";
 import CalendarEvent from "./models/calendarEvent.ts";
 import CalendarDatabase from "./models/calendarDatabase.ts";
@@ -20,6 +20,20 @@ const router = new Router();
 router.get("/", (ctx) => {
   const year = (new Date()).getUTCFullYear();
   ctx.response.redirect(`/${year}/`);
+});
+
+/* Calendar view */
+
+router.get("/:year/", async (ctx, next) => {
+  const year = Number(ctx.params.year);
+  const yearsRange = await CalendarDatabase.getMinMaxYears();
+
+  if (isNaN(year) || year < yearsRange.min || year > yearsRange.max) {
+    next();
+  }
+
+  const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(year);
+  ctx.response.body = nunjucks.render("./views/list.html", { calendarEvents, year, yearsRange });
 });
 
 /* Subscriptions */
@@ -180,23 +194,14 @@ router.post("/delete/:id/", async (ctx) => {
   ctx.response.redirect("/");
 });
 
-/* Calendar view */
+/* Static files */
 
-router.get("/:year/", async (ctx) => {
-  const year = Number(ctx.params.year);
-  const yearsRange = await CalendarDatabase.getMinMaxYears();
-
-  if (isNaN(year) || year < yearsRange.min || year > yearsRange.max) {
-    return;
-  }
-
-  const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(year);
-  ctx.response.body = nunjucks.render("./views/list.html", { calendarEvents, year, yearsRange });
-});
+router.get("/css/main.css", async(ctx) => {
+  await send(ctx, './static/css/main.css');
+})
 
 /* Start app */
 
 const app = new Application();
 app.use(router.routes());
-app.use(router.allowedMethods());
 app.listen({ port: 8080 });

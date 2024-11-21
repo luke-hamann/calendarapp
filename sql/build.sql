@@ -2,11 +2,15 @@
     Title: Database Build
 */
 
+DROP TABLE IF EXISTS Events;
+DROP TABLE IF EXISTS Subscriptions;
+DROP TABLE IF EXISTS Administrators;
+
 CREATE TABLE Events (
     id bigint GENERATED ALWAYS AS IDENTITY,
     description varchar(500) NOT NULL,
     timestamp timestamp without time zone NOT NULL,
-    broadcasted boolean NOT NULL
+    broadcast boolean NOT NULL
 );
 
 CREATE TABLE Subscriptions (
