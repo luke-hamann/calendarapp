@@ -204,4 +204,5 @@ router.get("/css/main.css", async(ctx) => {
 
 const app = new Application();
 app.use(router.routes());
+app.use(router.allowedMethods());
 app.listen({ port: 8080 });
