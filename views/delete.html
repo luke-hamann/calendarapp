@@ -1,0 +1,15 @@
+{% extends './_base.html' %}
+
+{% block title %}Confirm Deletion{% endblock %}
+
+{% block content %}
+  <form action="/delete/{{ calendarEvent.id }}/" method="post">
+    <div>
+      Are you sure you want to delete "{{ calendarEvent.description.slice(0, 10) }}"?
+    </div>
+    <div>
+      <input type="submit" value="Yes" />
+      <a href="/">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

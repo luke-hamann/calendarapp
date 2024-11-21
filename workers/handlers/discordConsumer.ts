@@ -1,7 +1,8 @@
 import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
 import IMessage from "../models/message.ts";
 
-function handler(message: IMessage): void {
+
+function discordHandler(message: IMessage): void {
   const url: string = message.subscriptionurl;
   const webhookContent: string = JSON.stringify({
     content: message.eventdescription
@@ -23,7 +24,7 @@ const onmessage = (signal: boolean) => running = signal;
 
 const connection = await connect();
 const channel = await connection.openChannel();
-const queueName = "discord";
+const queueName = "messages";
 await channel.declareQueue({ queue: queueName });
 
 while (running) {
@@ -31,7 +32,7 @@ while (running) {
     { queue: queueName },
     async (args, _props, data) => {
       const json = JSON.parse(new TextDecoder().decode(data));
-      handler(json);
+      if (json.subscriptiontype == "discord") discordHandler(json);
       await channel.ack({ deliveryTag: args.deliveryTag });
     }
   );

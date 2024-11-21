@@ -1,0 +1,49 @@
+{% extends './_base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h1>
+    {{ title }}
+  </h1>
+  <form action="{{ action }}" method="post">
+    {% if calendarEventForm and not calendarEventForm.isValid() %}
+      <ul>
+        {% for error in calendarEventForm.getErrors() %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <div>
+      <label for="date">
+        Date
+      </label>
+      <input type="date" name="date" id="date"
+        value="{% if calendarEventForm %}{{ calendarEventForm.date }}{% endif %}"/>
+    </div>
+    <div>
+      <label for="time">
+        Time
+      </label>
+      <input type="time" name="time" id="time"
+        value="{% if calendarEventForm %}{{ calendarEventForm.time }}{% endif %}" />
+    </div>
+    <div>
+      <label for="description">
+        Description
+      </label>
+      <textarea name="description" id="description"
+        >{% if calendarEventForm %}{{ calendarEventForm.description }}{% endif %}</textarea>
+    </div>
+    <div>
+      <input type="checkbox" name="broadcast" id="broadcast"
+        {% if calendarEventForm and calendarEventForm.broadcasted %}checked{% endif %} />
+      <label for="broadcast">
+        Broadcast
+      </label>
+    </div>
+    <div>
+      <input type="submit" value="Submit" />
+    </div>
+  </form>
+{% endblock content %}

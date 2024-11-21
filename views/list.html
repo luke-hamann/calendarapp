@@ -6,8 +6,13 @@
   <h1>
     Calendar
   </h1>
+  <p>
+    <a href="/add/">Add Event</a>
+  </p>
   {% for calendarEvent in calendarEvents %}
     <div>
+      <a href="/edit/{{ calendarEvent.id }}/">edit</a>
+      <a href="/delete/{{ calendarEvent.id }}/">delete</a>
       <kbd>
         {{ calendarEvent.timestamp.toString().slice(0, 24) }}
       </kbd>

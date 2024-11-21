@@ -4,20 +4,25 @@ import CalendarEvent from "./models/calendarEvent.ts";
 import CalendarDatabase from "./models/calendarDatabase.ts";
 import Subscription from "./models/subscription.ts";
 import User from "./models/user.ts";
+import CalendarEventForm from "./models/calendarEventForm.ts";
 
 /* Workers */
 
 new Worker(import.meta.resolve("./workers/producer.ts"), { type: "module" });
-new Worker(import.meta.resolve("./workers/consumer.ts"), { type: "module"});
+new Worker(import.meta.resolve("./workers/consumers.ts"), { type: "module"});
 
-/* Web frontend */
+/* Web frontend router */
 
 const router = new Router();
+
+/* Calendar routes */
 
 router.get("/", async (ctx) => {
   const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents();
   ctx.response.body = nunjucks.render("./views/list.html", { calendarEvents });
 });
+
+/* Subscriptions */
 
 router.get("/subscribe/", (ctx) => {
   ctx.response.body = nunjucks.render("./views/subscribe.html");
@@ -42,6 +47,8 @@ router.post("/subscribe/", async (ctx) => {
   await CalendarDatabase.addSubscription(subscription);
   ctx.response.body = nunjucks.render("./views/subscribeSuccess.html");
 });
+
+/* Authentication */
 
 router.get("/login/", (ctx) => {
   ctx.response.body = nunjucks.render("./views/login.html");
@@ -73,8 +80,107 @@ router.post("/login/", async (ctx) => {
 })
 
 router.post("/logout/", (ctx) => {
-
+  ctx.response.redirect("/");
 });
+
+/* Calendar CRUD */
+
+router.get("/add/", (ctx) => {
+  ctx.response.body = nunjucks.render("./views/edit.html", {
+    title: "Add Event", action: "/add/"
+  });
+})
+
+router.post("/add/", async (ctx) => {
+  const params: URLSearchParams = await ctx.request.body.form();
+  const calendarEventForm = CalendarEventForm.fromParams(params);
+
+  if (!calendarEventForm.isValid()) {
+    ctx.response.body = nunjucks.render("./views/edit.html", {
+      title: "Add Event", action: "/add/", calendarEventForm
+    });
+    return;
+  }
+
+  const calendarEvent = calendarEventForm.getCalendarEvent();
+  await CalendarDatabase.addEvent(calendarEvent);
+  ctx.response.redirect("/");
+});
+
+router.get("/edit/:id/", async (ctx) => {
+  const id = Number(ctx.params.id);
+
+  let calendarEvent: CalendarEvent;
+  try {
+    calendarEvent = await CalendarDatabase.getEvent(id);
+  } catch {
+    return;
+  }
+
+  const calendarEventForm = CalendarEventForm.fromCalendarEvent(calendarEvent);
+
+  ctx.response.body = nunjucks.render("./views/edit.html", {
+    title: "Edit Event", calendarEventForm, action: `/edit/${id}/`
+  })
+})
+
+router.post("/edit/:id/", async (ctx) => {
+  const id = Number(ctx.params.id ?? 0);
+
+  try {
+    await CalendarDatabase.getEvent(id);
+  } catch {
+    return;
+  }
+
+  const params = await ctx.request.body.form();
+  const calendarEventForm = CalendarEventForm.fromParams(params);
+  
+  if (!calendarEventForm.isValid()) {
+    ctx.response.body = nunjucks.render("./views/edit.html", {
+      title: "Edit Event",
+      errors: calendarEventForm.getErrors(),
+      calendarEventForm,
+      action: `/edit/${id}/`
+    });
+  }
+
+  const calendarEvent = calendarEventForm.getCalendarEvent();
+  calendarEvent.id = id;
+  CalendarDatabase.updateEvent(calendarEvent);
+  ctx.response.redirect("/");
+});
+
+router.get("/delete/:id/", async (ctx) => {
+  const id = Number(ctx.params.id);
+
+  let calendarEvent: CalendarEvent;
+  try {
+    calendarEvent = await CalendarDatabase.getEvent(id);
+  } catch {
+    return;
+  }
+
+  ctx.response.body = nunjucks.render("./views/delete.html", {
+    calendarEvent
+  });
+})
+
+router.post("/delete/:id/", async (ctx) => {
+  const id = Number(ctx.params.id);
+
+  let calendarEvent: CalendarEvent;
+  try {
+    calendarEvent = await CalendarDatabase.getEvent(id);
+  } catch {
+    return;
+  }
+
+  await CalendarDatabase.deleteEvent(calendarEvent);
+  ctx.response.redirect("/");
+});
+
+/* Start app */
 
 const app = new Application();
 app.use(router.routes());

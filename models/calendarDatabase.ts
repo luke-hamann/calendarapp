@@ -11,21 +11,51 @@ interface ICalendarEventRow {
 }
 
 export default abstract class CalendarDatabase {
+  public static async getEvent(id: number): Promise<CalendarEvent> {
+    const rows = await sql`
+      SELECT id, description, timestamp, broadcasted
+      FROM Events
+      WHERE id = ${id}
+    ` as {
+      id: number,
+      description: string,
+      timestamp: string,
+      broadcasted: string
+    }[];
+
+    if (rows.length == 0) throw new Error("Event does not exist");
+
+    const row = rows[0];
+    return new CalendarEvent(
+      row['id'],
+      row['description'],
+      new Date(row['timestamp']),
+      (row['broadcasted'] == 'true' ? true : false)
+    );
+  }
+
   public static async getEvents(
     year: number = 0,
     month: number = 0,
     day: number = 0,
   ): Promise<CalendarEvent[]> {
-    const rows: ICalendarEventRow[] = await sql`
+    const rows = await sql`
       SELECT id, description, timestamp, broadcasted
       FROM Events
       WHERE (${year} = 0 OR date_part('year', timestamp) = ${year}) AND
         (${month} = 0 OR date_part('month', timestamp) = ${month}) AND
         (${day} = 0 OR date_part('day', timestamp) = ${day})
       ORDER BY timestamp;
-    `;
+    ` as {
+      id: number,
+      description: string,
+      timestamp: string,
+      broadcasted: string
+    }[];
 
-    return rows;
+    return rows.map((row) => new CalendarEvent(
+      row['id'], row['description'], new Date(row['timestamp']), (row['broadcasted'] == 'true' ? true : false)
+    ));
   }
 
   public static async addEvent(calendarEvent: CalendarEvent) : Promise<void> {
@@ -50,10 +80,10 @@ export default abstract class CalendarDatabase {
     `;
   }
 
-  public static async deleteEvent(id: number) : Promise<void> {
+  public static async deleteEvent(calendarEvent: CalendarEvent) : Promise<void> {
     await sql`
       DELETE FROM Events
-      WHERE id = ${id}
+      WHERE id = ${calendarEvent.id}
     `;
   }
 
