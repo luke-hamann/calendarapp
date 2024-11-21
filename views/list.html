@@ -11,19 +11,35 @@
   <h1>
     {{ year }}
   </h1>
-  <p>
-    <a href="/add/">Add Event</a>
-  </p>
-  {% for calendarEvent in calendarEvents %}
-    <div>
-      <a href="/edit/{{ calendarEvent.id }}/">edit</a>
-      <a href="/delete/{{ calendarEvent.id }}/">delete</a>
-      <kbd>
-        {{ calendarEvent.timestamp.toString().slice(0, 24) }}
-      </kbd>
-      <span>
-        {{ calendarEvent.description }}
-      </span>
-    </div>
-  {% endfor %}
+  <form action="/add/" method="post">
+    <span>Add event:</span>
+    <input type="date" name="date" />
+    <input type="time" name="time" />
+    <input type="text" name="description" />
+    <input type="checkbox" name="broadcast" id="broadcast" />
+    <label for="broadcast">Broadcast</label>
+    <input type="submit" value="Add" />
+  </form>
+  {% if calendarEvents.length > 0 %}
+    <table>
+      {% for calendarEvent in calendarEvents %}
+        <tr data-date="{{ calendarEvent.timestamp }}">
+          <td>
+            <kbd>
+              {{ calendarEvent.timestamp.toString().slice(0, 24) }}
+            </kbd>
+          </td>
+          <td>
+            {{ calendarEvent.description }}
+          </td>
+          <td>
+            <a href="/edit/{{ calendarEvent.id }}/">edit</a>
+          </td>
+          <td>
+            <a href="/delete/{{ calendarEvent.id }}/">delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
 {% endblock %}

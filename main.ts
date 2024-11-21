@@ -17,17 +17,10 @@ const router = new Router();
 
 /* Calendar routes */
 
-router.get("/", async (ctx) => {
+router.get("/", (ctx) => {
   const year = (new Date()).getUTCFullYear();
   ctx.response.redirect(`/${year}/`);
 });
-
-router.get("/:year/", async (ctx) => {
-  const year = Number(ctx.params.year);
-  const yearsRange = await CalendarDatabase.getMinMaxYears();
-  const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(year);
-  ctx.response.body = nunjucks.render("./views/list.html", { calendarEvents, year, yearsRange });
-})
 
 /* Subscriptions */
 
@@ -96,7 +89,7 @@ router.get("/add/", (ctx) => {
   ctx.response.body = nunjucks.render("./views/edit.html", {
     title: "Add Event", action: "/add/"
   });
-})
+});
 
 router.post("/add/", async (ctx) => {
   const params: URLSearchParams = await ctx.request.body.form();
@@ -111,7 +104,7 @@ router.post("/add/", async (ctx) => {
 
   const calendarEvent = calendarEventForm.getCalendarEvent();
   await CalendarDatabase.addEvent(calendarEvent);
-  ctx.response.redirect("/");
+  ctx.response.redirect(`/${calendarEvent.timestamp.getUTCFullYear()}/`);
 });
 
 router.get("/edit/:id/", async (ctx) => {
@@ -155,7 +148,7 @@ router.post("/edit/:id/", async (ctx) => {
   const calendarEvent = calendarEventForm.getCalendarEvent();
   calendarEvent.id = id;
   CalendarDatabase.updateEvent(calendarEvent);
-  ctx.response.redirect("/");
+  ctx.response.redirect(`/${calendarEvent.timestamp.getUTCFullYear()}/`);
 });
 
 router.get("/delete/:id/", async (ctx) => {
@@ -185,6 +178,20 @@ router.post("/delete/:id/", async (ctx) => {
 
   await CalendarDatabase.deleteEvent(calendarEvent);
   ctx.response.redirect("/");
+});
+
+/* Calendar view */
+
+router.get("/:year/", async (ctx) => {
+  const year = Number(ctx.params.year);
+  const yearsRange = await CalendarDatabase.getMinMaxYears();
+
+  if (isNaN(year) || year < yearsRange.min || year > yearsRange.max) {
+    return;
+  }
+
+  const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(year);
+  ctx.response.body = nunjucks.render("./views/list.html", { calendarEvents, year, yearsRange });
 });
 
 /* Start app */
