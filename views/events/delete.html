@@ -1,4 +1,4 @@
-{% extends './_base.html' %}
+{% extends '../_shared/_base.html' %}
 
 {% block title %}Confirm Deletion{% endblock %}
 
@@ -9,7 +9,7 @@
     </div>
     <div>
       <input type="submit" value="Yes" />
-      <a href="/">Cancel</a>
+      <a href="/{{ calendarEvent.timestamp.getUTCFullYear() }}/">Cancel</a>
     </div>
   </form>
 {% endblock %}
