@@ -136,4 +136,23 @@ export default abstract class CalendarDatabase {
         Events.timestamp <= to_timestamp(${timestamp})
     `;
   }
+
+  public static async getMinMaxYears(): Promise<{min: number, max: number}> {
+    const rows = await sql`
+      SELECT (
+        SELECT date_part('year', timestamp)
+        FROM events
+        order by timestamp
+        limit 1
+      ) min,
+      (
+        SELECT date_part('year', timestamp)
+        FROM events
+        order by timestamp DESC
+        limit 1
+      ) max;
+    ` as {min: number, max: number}[];
+
+    return {min: rows[0].min, max: rows[0].max};
+  }
 }

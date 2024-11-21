@@ -20,3 +20,7 @@ CREATE TABLE Administrators (
     name varchar(32) NOT NULL,
     password varchar(100) NOT NULL
 );
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON ALL TABLES IN SCHEMA public
+TO calendarapp;

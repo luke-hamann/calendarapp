@@ -3,8 +3,13 @@
 {% block title %}Calendar{% endblock %}
 
 {% block content %}
+  <div>
+    {% for y in range(yearsRange.min, yearsRange.max) %}
+      <a href="/{{ y }}/">{{ y }}</a>
+    {% endfor %}
+  </div>
   <h1>
-    Calendar
+    {{ year }}
   </h1>
   <p>
     <a href="/add/">Add Event</a>

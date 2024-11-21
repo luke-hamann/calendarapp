@@ -18,9 +18,16 @@ const router = new Router();
 /* Calendar routes */
 
 router.get("/", async (ctx) => {
-  const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents();
-  ctx.response.body = nunjucks.render("./views/list.html", { calendarEvents });
+  const year = (new Date()).getUTCFullYear();
+  ctx.response.redirect(`/${year}/`);
 });
+
+router.get("/:year/", async (ctx) => {
+  const year = Number(ctx.params.year);
+  const yearsRange = await CalendarDatabase.getMinMaxYears();
+  const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(year);
+  ctx.response.body = nunjucks.render("./views/list.html", { calendarEvents, year, yearsRange });
+})
 
 /* Subscriptions */
 
