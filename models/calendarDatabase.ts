@@ -143,14 +143,14 @@ export default abstract class CalendarDatabase {
     `;
   }
 
-  public static async markEventsAsBroadcast(date: Date): Promise<void> {
-    const seconds = Math.round(date.getTime() / 1000);
-    await sql`
-      UPDATE Events
-      SET broadcast = false
-      WHERE broadcast = true AND
-        Events.timestamp <= to_timestamp(${seconds})
-    `;
+  public static async setEventsAsBroadcast(eventIds: Set<number>): Promise<void> {
+    for (const id of eventIds) {
+      await sql`
+        UPDATE Events
+        SET broadcast = false
+        WHERE id = ${id}
+      `;
+    }
   }
 
   public static async getMinMaxYears(): Promise<{min: number, max: number}> {

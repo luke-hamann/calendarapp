@@ -14,13 +14,13 @@ for (const queue in queues) {
 }
 
 while (running) {
-  const now = new Date();
-  const sql = CalendarDatabase.getUnpublishedMessages(now);
+  const sql = CalendarDatabase.getUnpublishedMessages(new Date());
   const cursor = sql.cursor();
   const promises: Promise<void>[] = [];
+  const eventIds: Set<number> = new Set();
   for await (const [row] of cursor) {
-    console.log(row);
     if (!queues.includes(row.subscriptiontype)) continue;
+    eventIds.add(row.eventid);
     const promise = channel.publish(
       { routingKey: row.subscriptiontype },
       { contentType: "application/json" },
@@ -28,7 +28,7 @@ while (running) {
     );
     promises.push(promise);
   }
-  promises.push(CalendarDatabase.markEventsAsBroadcast(now));
+  promises.push(CalendarDatabase.setEventsAsBroadcast(eventIds));
   await Promise.all(promises);
 }
 

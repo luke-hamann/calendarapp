@@ -10,7 +10,7 @@ import CalendarDatabase from "./models/calendarDatabase.ts";
 /* Start workers */
 
 new Worker(import.meta.resolve("./workers/producer.ts"), { type: "module" });
-new Worker(import.meta.resolve("./workers/consumers.ts"), { type: "module"});
+new Worker(import.meta.resolve("./workers/consumers.ts"), { type: "module" });
 
 /* Start app */
 

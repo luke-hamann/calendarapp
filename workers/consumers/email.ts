@@ -2,7 +2,7 @@ import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
 import IMessage from "../models/message.ts";
 
 function handler(message: IMessage): Promise<void> {
-  console.log("emailed " + message.eventdescription);
+  console.log(`emailed ${message.subscriptionurl} ${message.eventdescription}`);
   return new Promise(() => {});
 }
 
