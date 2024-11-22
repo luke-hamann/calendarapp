@@ -8,9 +8,9 @@ async function handler(message: IMessage): Promise<void> {
     content: message.eventdescription,
   });
 
-  console.log(webhookContent);
-  await Promise.resolve();
-  return;
+  // console.log(webhookContent);
+  // await Promise.resolve();
+  // return;
 
   fetch(url, {
     method: "POST",
@@ -19,11 +19,11 @@ async function handler(message: IMessage): Promise<void> {
     },
     body: webhookContent,
   })
-    .then(async (response) => {
-      if (response.status == 401) {
-        await CalendarDatabase.deleteSubscriptionByUrl(url);
-      }
-    });
+  .then(async (response) => {
+    if (response.status == 401) {
+      await CalendarDatabase.deleteSubscriptionByUrl(url);
+    }
+  });
 }
 
 // deno-lint-ignore no-var
