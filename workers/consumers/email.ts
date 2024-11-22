@@ -1,8 +1,9 @@
 import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
 import IMessage from "../models/message.ts";
 
-function handler(message: IMessage): void {
-  console.log("emailed" + message);
+function handler(message: IMessage): Promise<void> {
+  console.log("emailed " + message.eventdescription);
+  return new Promise(() => {});
 }
 
 // deno-lint-ignore no-var
@@ -19,8 +20,8 @@ while (running) {
   await channel.consume(
     { queue: queueName },
     async (args, _props, data) => {
-      const message: IMessage = JSON.parse(new TextDecoder().decode(data));
-      handler(message);
+      const json = JSON.parse(new TextDecoder().decode(data));
+      await handler(json);
       await channel.ack({ deliveryTag: args.deliveryTag });
     }
   );

@@ -26,7 +26,11 @@ app.use(async (ctx, next) => {
     user = null;
   }
   ctx.state.user = user;
+
   await next();
+
+  if (ctx.state.user == null) ctx.cookies.delete("userId");
+  else ctx.cookies.set("userId", ctx.state.user!.id.toString());
 });
 
 app.use(authenticationRouter.routes());

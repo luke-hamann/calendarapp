@@ -24,21 +24,21 @@ router.post("/login/", async (ctx) => {
     return;
   }
 
-  const userId = await CalendarDatabase.getUserId(user);
+  user.id = await CalendarDatabase.getUserId(user);
 
-  if (userId == 0) {
+  if (user.id == 0) {
     ctx.response.body = nunjucks.render("./views/authentication/login.html", {
       user, errors: ["Invalid credentials."]
     });
     return;
   }
 
-  ctx.cookies.set("userId", userId.toString());
+  ctx.state.user = user;
   ctx.response.redirect("/");
 })
 
 router.post("/logout/", (ctx) => {
-  ctx.cookies.set("userId", "0");
+  ctx.state.user = null;
   ctx.response.redirect("/");
 });
 

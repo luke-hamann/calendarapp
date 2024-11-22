@@ -17,7 +17,7 @@ export default class CalendarEventForm {
 
   public static fromCalendarEvent(calendarEvent: CalendarEvent): CalendarEventForm {
     const form = new CalendarEventForm();
-    form.datetime = calendarEvent.timestamp.toISOString();
+    form.datetime = calendarEvent.timestamp.toISOString().slice(0, 19);
     form.description = calendarEvent.description;
     form.broadcast = calendarEvent.broadcast;
     return form;

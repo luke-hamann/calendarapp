@@ -1,4 +1,4 @@
-import { connect } from "https://deno.land/x/amqp/mod.ts";
+import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
 import CalendarDatabase from "../models/calendarDatabase.ts";
 
 let running: boolean = true;
@@ -14,11 +14,12 @@ for (const queue in queues) {
 }
 
 while (running) {
-  const now = Date.now() / 1000;
+  const now = new Date();
   const sql = CalendarDatabase.getUnpublishedMessages(now);
   const cursor = sql.cursor();
   const promises: Promise<void>[] = [];
   for await (const [row] of cursor) {
+    console.log(row);
     if (!queues.includes(row.subscriptiontype)) continue;
     const promise = channel.publish(
       { routingKey: row.subscriptiontype },

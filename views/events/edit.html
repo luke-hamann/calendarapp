@@ -7,7 +7,7 @@
     {{ title }}
   </h1>
   <form action="{{ action }}" method="post">
-    {% if calendarEventForm and not calendarEventForm.isValid() %}
+    {% if not calendarEventForm.isValid() %}
       <ul>
         {% for error in calendarEventForm.getErrors() %}
           <li>{{ error }}</li>
@@ -19,18 +19,18 @@
         Date/Time
       </label>
       <input type="datetime-local" name="datetime" id="datetime"
-        value="{% if calendarEventForm %}{{ calendarEventForm.datetime }}{% endif %}"/>
+        value="{{ calendarEventForm.datetime }}"/>
     </div>
     <div>
       <label for="description">
         Description
       </label>
       <input type="text" name="description" id="description"
-        value="{% if calendarEventForm %}{{ calendarEventForm.description }}{% endif %}" />
+        value="{{ calendarEventForm.description }}" />
     </div>
     <div>
       <input type="checkbox" name="broadcast" id="broadcast"
-        {% if calendarEventForm and calendarEventForm.broadcast %}checked{% endif %} />
+        {% if calendarEventForm.broadcast %}checked{% endif %} />
       <label for="broadcast">
         Broadcast
       </label>

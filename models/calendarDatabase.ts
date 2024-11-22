@@ -3,13 +3,6 @@ import CalendarEvent from "./calendarEvent.ts";
 import Subscription from "./subscription.ts";
 import User from "./user.ts";
 
-interface ICalendarEventRow {
-  id: number;
-  description: string;
-  timestamp: Date;
-  broadcast: boolean;
-}
-
 export default abstract class CalendarDatabase {
   public static async getEvent(id: number): Promise<CalendarEvent> {
     const rows = await sql`
@@ -20,7 +13,7 @@ export default abstract class CalendarDatabase {
       id: number,
       description: string,
       timestamp: string,
-      broadcast: string
+      broadcast: boolean
     }[];
 
     if (rows.length == 0) throw new Error("Event does not exist");
@@ -30,7 +23,7 @@ export default abstract class CalendarDatabase {
       row['id'],
       row['description'],
       new Date(row['timestamp']),
-      (row['broadcast'] == 'true' ? true : false)
+      row['broadcast']
     );
   }
 
@@ -50,11 +43,11 @@ export default abstract class CalendarDatabase {
       id: number,
       description: string,
       timestamp: string,
-      broadcast: string
+      broadcast: boolean
     }[];
 
     return rows.map((row) => new CalendarEvent(
-      row['id'], row['description'], new Date(row['timestamp']), (row['broadcast'] == 'true' ? true : false)
+      row['id'], row['description'], new Date(row['timestamp']), row['broadcast']
     ));
   }
 
@@ -133,7 +126,8 @@ export default abstract class CalendarDatabase {
     return rows[0].id;
   }
 
-  public static getUnpublishedMessages(timestamp: number) {
+  public static getUnpublishedMessages(date: Date) {
+    const seconds = Math.round(date.getTime() / 1000);
     return sql`
       SELECT
         Events.id eventId,
@@ -144,17 +138,18 @@ export default abstract class CalendarDatabase {
         Subscriptions.type subscriptionType,
         Subscriptions.url subscriptionUrl
       FROM Events, Subscriptions
-      WHERE Events.timestamp <= to_timestamp(${timestamp}) AND
+      WHERE Events.timestamp <= to_timestamp(${seconds}) AND
         Events.broadcast = true
     `;
   }
 
-  public static async markEventsAsBroadcast(timestamp: number): Promise<void> {
+  public static async markEventsAsBroadcast(date: Date): Promise<void> {
+    const seconds = Math.round(date.getTime() / 1000);
     await sql`
       UPDATE Events
       SET broadcast = false
       WHERE broadcast = true AND
-        Events.timestamp <= to_timestamp(${timestamp})
+        Events.timestamp <= to_timestamp(${seconds})
     `;
   }
 
