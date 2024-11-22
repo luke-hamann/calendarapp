@@ -2,15 +2,14 @@ import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
 import IMessage from "../models/message.ts";
 import CalendarDatabase from "../../models/calendarDatabase.ts";
 
-const kv = await Deno.openKv();
-
 async function handler(message: IMessage): Promise<void> {
   const url: string = message.subscriptionurl;
   const webhookContent: string = JSON.stringify({
     content: message.eventdescription
   });
 
-  if ((await kv.get([url])).value != null) return;
+  console.log(webhookContent);
+  return;
 
   fetch(url, {
     method: "POST",
@@ -22,7 +21,6 @@ async function handler(message: IMessage): Promise<void> {
   .then(async (response) => {
     if (response.status == 401) {
       await CalendarDatabase.deleteSubscriptionByUrl(url);
-      kv.set([url], "bad");
     }
   });
 }

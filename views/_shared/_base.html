@@ -12,7 +12,15 @@
         <ul>
           <li><a href="/">Calendar</a></li>
           <li><a href="/subscribe/">Subscribe</a></li>
-          <li><a href="/login/">Login</a></li>
+          {% if currentUser %}
+            <li>
+              <form action="/logout/" method="post">
+                <input type="submit" value="Logout" />
+              </form>
+            </li>
+          {% else %}
+            <li><a href="/login/">Login</a></li>
+          {% endif %}
         </ul>
       </nav>
     </header>

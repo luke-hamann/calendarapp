@@ -7,18 +7,22 @@ import CalendarDatabase from "../models/calendarDatabase.ts";
 const router = new Router();
 
 router.get("/add/", (ctx) => {
+  if (ctx.state.user == null) ctx.response.redirect("/login/");
+
   ctx.response.body = nunjucks.render("./views/events/edit.html", {
-    title: "Add Event", action: "/add/"
+    title: "Add Event", action: "/add/", currentUser: ctx.state.user
   });
 });
 
 router.post("/add/", async (ctx) => {
+  if (ctx.state.user == null) ctx.response.redirect("/login/");
+
   const params: URLSearchParams = await ctx.request.body.form();
   const calendarEventForm = CalendarEventForm.fromParams(params);
 
   if (!calendarEventForm.isValid()) {
     ctx.response.body = nunjucks.render("./views/events/edit.html", {
-      title: "Add Event", action: "/add/", calendarEventForm
+      title: "Add Event", action: "/add/", calendarEventForm, currentUser: ctx.state.user
     });
     return;
   }
@@ -29,6 +33,8 @@ router.post("/add/", async (ctx) => {
 });
 
 router.get("/edit/:id/", async (ctx) => {
+  if (ctx.state.user == null) ctx.response.redirect("/login/");
+
   const id = Number(ctx.params.id);
 
   let calendarEvent: CalendarEvent;
@@ -41,11 +47,13 @@ router.get("/edit/:id/", async (ctx) => {
   const calendarEventForm = CalendarEventForm.fromCalendarEvent(calendarEvent);
 
   ctx.response.body = nunjucks.render("./views/events/edit.html", {
-    title: "Edit Event", calendarEventForm, action: `/edit/${id}/`
+    title: "Edit Event", calendarEventForm, action: `/edit/${id}/`, currentUser: ctx.state.user
   })
 })
 
 router.post("/edit/:id/", async (ctx) => {
+  if (ctx.state.user == null) ctx.response.redirect("/login/");
+
   const id = Number(ctx.params.id ?? 0);
 
   try {
@@ -73,6 +81,8 @@ router.post("/edit/:id/", async (ctx) => {
 });
 
 router.get("/delete/:id/", async (ctx) => {
+  if (ctx.state.user == null) ctx.response.redirect("/login/");
+
   const id = Number(ctx.params.id);
 
   let calendarEvent: CalendarEvent;
@@ -83,11 +93,13 @@ router.get("/delete/:id/", async (ctx) => {
   }
 
   ctx.response.body = nunjucks.render("./views/events/delete.html", {
-    calendarEvent
+    calendarEvent, currentUser: ctx.state.user
   });
 })
 
 router.post("/delete/:id/", async (ctx) => {
+  if (ctx.state.user == null) ctx.response.redirect("/login/");
+
   const id = Number(ctx.params.id);
 
   let calendarEvent: CalendarEvent;

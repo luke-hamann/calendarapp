@@ -6,7 +6,9 @@ import CalendarDatabase from "../models/calendarDatabase.ts";
 const router = new Router();
 
 router.get("/subscribe/", (ctx) => {
-  ctx.response.body = nunjucks.render("./views/subscriptions/subscribe.html");
+  ctx.response.body = nunjucks.render("./views/subscriptions/subscribe.html", {
+    currentUser: ctx.state.user
+  });
 });
 
 router.post("/subscribe/", async (ctx) => {
@@ -26,7 +28,9 @@ router.post("/subscribe/", async (ctx) => {
 
   const subscription: Subscription = new Subscription(0, type, target);
   await CalendarDatabase.addSubscription(subscription);
-  ctx.response.body = nunjucks.render("./views/subscribeSuccess.html");
+  ctx.response.body = nunjucks.render("./views/subscribeSuccess.html", {
+    currentUser: ctx.state.user
+  });
 });
 
 export default router;

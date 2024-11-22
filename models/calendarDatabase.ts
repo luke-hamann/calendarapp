@@ -109,14 +109,28 @@ export default abstract class CalendarDatabase {
     `;
   }
 
-  public static async isValidLogin(user: User) : Promise<boolean> {
-    const results = await sql`
-      SELECT *
+  public static async getUser(id: number) : Promise<User> {
+    const rows = await sql`
+      SELECT id, name
+      FROM Administrators
+      WHERE id = ${id}
+    ` as {id: number, name: string}[];
+
+    if (rows.length == 0) throw Error("User does not exist.");
+
+    return new User(rows[0].id, rows[0].name, '');
+  }
+
+  public static async getUserId(user: User) : Promise<number> {
+    const rows = await sql`
+      SELECT id
       FROM Administrators
       WHERE name = ${user.name} AND
         password = ${user.password}
-    `;
-    return (results.length > 0);
+    ` as {id: number}[];
+
+    if (rows.length == 0) return 0;
+    return rows[0].id;
   }
 
   public static getUnpublishedMessages(timestamp: number) {

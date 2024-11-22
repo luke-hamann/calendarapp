@@ -6,10 +6,12 @@ import CalendarDatabase from "../models/calendarDatabase.ts";
 const router = new Router();
 
 router.get("/login/", (ctx) => {
+  if (ctx.state.user) ctx.response.redirect("/");
   ctx.response.body = nunjucks.render("./views/authentication/login.html");
 })
 
 router.post("/login/", async (ctx) => {
+  if (ctx.state.user) ctx.response.redirect("/");
   const form = await ctx.request.body.form();
   const username = form.get("name") ?? "";
   const password = form.get("password") ?? "";
@@ -22,19 +24,21 @@ router.post("/login/", async (ctx) => {
     return;
   }
 
-  const isValidLogin = await CalendarDatabase.isValidLogin(user);
+  const userId = await CalendarDatabase.getUserId(user);
 
-  if (!isValidLogin) {
+  if (userId == 0) {
     ctx.response.body = nunjucks.render("./views/authentication/login.html", {
       user, errors: ["Invalid credentials."]
     });
     return;
   }
 
+  ctx.cookies.set("userId", userId.toString());
   ctx.response.redirect("/");
 })
 
 router.post("/logout/", (ctx) => {
+  ctx.cookies.set("userId", "0");
   ctx.response.redirect("/");
 });
 

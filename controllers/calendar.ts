@@ -22,7 +22,8 @@ router.get("/:year/", async (ctx, next) => {
   if (year < yearsRange.min || year > yearsRange.max) return;
 
   const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(year);
-  ctx.response.body = nunjucks.render("./views/calendar/list.html", { calendarEvents, year, yearsRange });
+  ctx.response.body = nunjucks.render("./views/calendar/list.html", {
+    calendarEvents, year, yearsRange, "currentUser": ctx.state.user });
 });
 
 export default router;
