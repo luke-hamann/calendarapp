@@ -84,7 +84,7 @@ router.post("/edit/:id/", async (ctx) => {
 
   const calendarEvent = calendarEventForm.getCalendarEvent();
   calendarEvent.id = id;
-  CalendarDatabase.updateEvent(calendarEvent);
+  await CalendarDatabase.updateEvent(calendarEvent);
   ctx.response.redirect(`/${calendarEvent.timestamp.getUTCFullYear()}/`);
 });
 
