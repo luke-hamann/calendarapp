@@ -9,6 +9,7 @@ async function handler(message: IMessage): Promise<void> {
   });
 
   console.log(webhookContent);
+  await Promise.resolve();
   return;
 
   fetch(url, {

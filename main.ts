@@ -3,6 +3,7 @@ import User from "./models/user.ts";
 import authenticationRouter from "./controllers/authentication.ts";
 import calendarRouter from "./controllers/calendar.ts";
 import eventsRouter from "./controllers/events.ts";
+import pushNotifications from "./controllers/pushNotifications.ts";
 import staticRouter from "./controllers/static.ts";
 import subscriptionRouter from "./controllers/subscriptions.ts";
 import CalendarDatabase from "./models/calendarDatabase.ts";
@@ -36,6 +37,7 @@ app.use(async (ctx, next) => {
 app.use(authenticationRouter.routes());
 app.use(calendarRouter.routes());
 app.use(eventsRouter.routes());
+app.use(pushNotifications.routes());
 app.use(staticRouter.routes());
 app.use(subscriptionRouter.routes());
 

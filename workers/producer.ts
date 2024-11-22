@@ -6,7 +6,7 @@ let running: boolean = true;
 const onmessage = (msg: boolean) => running = msg;
 
 // Setup the connection, channel, and queues
-const queues: string[] = ["discord", "email"];
+const queues: string[] = ["discord", "email", "push"];
 const connection = await connect();
 const channel = await connection.openChannel();
 for (const queue in queues) {

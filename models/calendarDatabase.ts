@@ -158,6 +158,18 @@ export default abstract class CalendarDatabase {
       FROM Events, Subscriptions
       WHERE Events.timestamp <= to_timestamp(${seconds}) AND
         Events.broadcast = true
+      UNION
+      SELECT
+        Events.id eventId,
+        Events.description eventDescription,
+        Events.timestamp eventTimestamp,
+        Events.broadcast eventBroadcast,
+        0 subscriptionId,
+        'push' subscriptionType,
+        '' subscriptionUrl
+      FROM Events
+      WHERE Events.timestamp <= to_timestamp(${seconds}) AND
+        Events.broadcast = true
     `;
   }
 

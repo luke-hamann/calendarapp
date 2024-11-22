@@ -1,9 +1,9 @@
 import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
 import IMessage from "../models/message.ts";
 
-function handler(message: IMessage): Promise<void> {
+async function handler(message: IMessage): Promise<void> {
   console.log(`emailed ${message.subscriptionurl} ${message.eventdescription}`);
-  return new Promise(() => {});
+  return Promise.resolve();
 }
 
 // deno-lint-ignore no-var
