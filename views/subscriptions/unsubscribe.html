@@ -1,0 +1,18 @@
+{% extends '../_shared/_base.html' %}
+
+{% block title %}Unsubscribe{% endblock %}
+
+{% block content %}
+  <h1>
+    Unsubscribe
+  </h1>
+  <form action="/unsubscribe/" method="post">
+    <div>
+      Are you sure you want to unsubscribe?
+    </div>
+    <div>
+      <input type="submit" value="Yes" />
+      <a href="/">No</a>
+    </div>
+  </form>
+{% endblock %}

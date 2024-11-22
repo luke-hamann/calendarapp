@@ -38,4 +38,10 @@ router.post("/subscribe/", async (ctx) => {
   });
 });
 
+router.get("/unsubscribe/:token/", (ctx) => {
+  ctx.response.body = nunjucks.render("./views/subscriptions/unsubscribe.html", {
+    currentUser: ctx.state.user
+  });
+});
+
 export default router;
