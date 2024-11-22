@@ -1,20 +1,19 @@
 import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
 import IMessage from "../models/message.ts";
 
-
 function discordHandler(message: IMessage): void {
   const url: string = message.subscriptionurl;
   const webhookContent: string = JSON.stringify({
-    content: message.eventdescription
+    content: message.eventdescription,
   });
 
   fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: webhookContent
-  })
+    body: webhookContent,
+  });
 }
 
 // deno-lint-ignore no-var
@@ -34,6 +33,6 @@ while (running) {
       const json = JSON.parse(new TextDecoder().decode(data));
       if (json.subscriptiontype == "discord") discordHandler(json);
       await channel.ack({ deliveryTag: args.deliveryTag });
-    }
+    },
   );
 }

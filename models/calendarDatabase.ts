@@ -9,21 +9,16 @@ export default abstract class CalendarDatabase {
       SELECT id, description, timestamp, broadcast
       FROM Events
       WHERE id = ${id}
-    ` as {
-      id: number,
-      description: string,
-      timestamp: string,
-      broadcast: boolean
-    }[];
+    `;
 
     if (rows.length == 0) throw new Error("Event does not exist");
 
     const row = rows[0];
     return new CalendarEvent(
-      row['id'],
-      row['description'],
-      new Date(row['timestamp']),
-      row['broadcast']
+      row["id"],
+      row["description"],
+      new Date(row["timestamp"]),
+      row["broadcast"],
     );
   }
 
@@ -39,19 +34,40 @@ export default abstract class CalendarDatabase {
         (${month} = 0 OR date_part('month', timestamp) = ${month}) AND
         (${day} = 0 OR date_part('day', timestamp) = ${day})
       ORDER BY timestamp;
-    ` as {
-      id: number,
-      description: string,
-      timestamp: string,
-      broadcast: boolean
-    }[];
+    `;
 
-    return rows.map((row) => new CalendarEvent(
-      row['id'], row['description'], new Date(row['timestamp']), row['broadcast']
-    ));
+    return rows.map((row) =>
+      new CalendarEvent(
+        row["id"],
+        row["description"],
+        new Date(row["timestamp"]),
+        row["broadcast"],
+      )
+    );
   }
 
-  public static async addEvent(calendarEvent: CalendarEvent) : Promise<void> {
+  public static async getRecentPastEvents(
+    maxCount: number,
+  ): Promise<CalendarEvent[]> {
+    const rows = await sql`
+      SELECT id, description, timestamp, broadcast
+      FROM events
+      WHERE timestamp < NOW()
+      ORDER BY timestamp DESC
+      LIMIT ${maxCount};
+    `;
+
+    return rows.map((row) =>
+      new CalendarEvent(
+        row["id"],
+        row["description"],
+        new Date(row["timestamp"]),
+        row["broadcast"],
+      )
+    );
+  }
+
+  public static async addEvent(calendarEvent: CalendarEvent): Promise<void> {
     await sql`
       INSERT INTO Events
         (description, timestamp, broadcast)
@@ -63,7 +79,7 @@ export default abstract class CalendarDatabase {
     `;
   }
 
-  public static async updateEvent(calendarEvent: CalendarEvent) : Promise<void> {
+  public static async updateEvent(calendarEvent: CalendarEvent): Promise<void> {
     await sql`
       UPDATE Events
       SET description = ${calendarEvent.description},
@@ -73,14 +89,16 @@ export default abstract class CalendarDatabase {
     `;
   }
 
-  public static async deleteEvent(calendarEvent: CalendarEvent) : Promise<void> {
+  public static async deleteEvent(calendarEvent: CalendarEvent): Promise<void> {
     await sql`
       DELETE FROM Events
       WHERE id = ${calendarEvent.id}
     `;
   }
 
-  public static async addSubscription(subscription: Subscription) : Promise<void> {
+  public static async addSubscription(
+    subscription: Subscription,
+  ): Promise<void> {
     const result = await sql`
       SELECT *
       FROM Subscriptions
@@ -102,25 +120,25 @@ export default abstract class CalendarDatabase {
     `;
   }
 
-  public static async getUser(id: number) : Promise<User> {
+  public static async getUser(id: number): Promise<User> {
     const rows = await sql`
       SELECT id, name
       FROM Administrators
       WHERE id = ${id}
-    ` as {id: number, name: string}[];
+    ` as { id: number; name: string }[];
 
     if (rows.length == 0) throw Error("User does not exist.");
 
-    return new User(rows[0].id, rows[0].name, '');
+    return new User(rows[0].id, rows[0].name, "");
   }
 
-  public static async getUserId(user: User) : Promise<number> {
+  public static async getUserId(user: User): Promise<number> {
     const rows = await sql`
       SELECT id
       FROM Administrators
       WHERE name = ${user.name} AND
         password = ${user.password}
-    ` as {id: number}[];
+    ` as { id: number }[];
 
     if (rows.length == 0) return 0;
     return rows[0].id;
@@ -143,7 +161,9 @@ export default abstract class CalendarDatabase {
     `;
   }
 
-  public static async setEventsAsBroadcast(eventIds: Set<number>): Promise<void> {
+  public static async setEventsAsBroadcast(
+    eventIds: Set<number>,
+  ): Promise<void> {
     for (const id of eventIds) {
       await sql`
         UPDATE Events
@@ -153,7 +173,7 @@ export default abstract class CalendarDatabase {
     }
   }
 
-  public static async getMinMaxYears(): Promise<{min: number, max: number}> {
+  public static async getMinMaxYears(): Promise<{ min: number; max: number }> {
     const rows = await sql`
       SELECT (
         SELECT date_part('year', timestamp)
@@ -167,8 +187,8 @@ export default abstract class CalendarDatabase {
         order by timestamp DESC
         limit 1
       ) max;
-    ` as {min: number, max: number}[];
+    ` as { min: number; max: number }[];
 
-    return {min: rows[0].min, max: rows[0].max};
+    return { min: rows[0].min, max: rows[0].max };
   }
 }

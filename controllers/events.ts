@@ -10,7 +10,9 @@ router.get("/add/", (ctx) => {
   if (ctx.state.user == null) ctx.response.redirect("/login/");
 
   ctx.response.body = nunjucks.render("./views/events/edit.html", {
-    title: "Add Event", action: "/add/", currentUser: ctx.state.user
+    title: "Add Event",
+    action: "/add/",
+    currentUser: ctx.state.user,
   });
 });
 
@@ -22,7 +24,10 @@ router.post("/add/", async (ctx) => {
 
   if (!calendarEventForm.isValid()) {
     ctx.response.body = nunjucks.render("./views/events/edit.html", {
-      title: "Add Event", action: "/add/", calendarEventForm, currentUser: ctx.state.user
+      title: "Add Event",
+      action: "/add/",
+      calendarEventForm,
+      currentUser: ctx.state.user,
     });
     return;
   }
@@ -47,9 +52,12 @@ router.get("/edit/:id/", async (ctx) => {
   const calendarEventForm = CalendarEventForm.fromCalendarEvent(calendarEvent);
 
   ctx.response.body = nunjucks.render("./views/events/edit.html", {
-    title: "Edit Event", calendarEventForm, action: `/edit/${id}/`, currentUser: ctx.state.user
-  })
-})
+    title: "Edit Event",
+    calendarEventForm,
+    action: `/edit/${id}/`,
+    currentUser: ctx.state.user,
+  });
+});
 
 router.post("/edit/:id/", async (ctx) => {
   if (ctx.state.user == null) ctx.response.redirect("/login/");
@@ -64,13 +72,13 @@ router.post("/edit/:id/", async (ctx) => {
 
   const params = await ctx.request.body.form();
   const calendarEventForm = CalendarEventForm.fromParams(params);
-  
+
   if (!calendarEventForm.isValid()) {
     ctx.response.body = nunjucks.render("./views/events/edit.html", {
       title: "Edit Event",
       errors: calendarEventForm.getErrors(),
       calendarEventForm,
-      action: `/edit/${id}/`
+      action: `/edit/${id}/`,
     });
   }
 
@@ -93,9 +101,10 @@ router.get("/delete/:id/", async (ctx) => {
   }
 
   ctx.response.body = nunjucks.render("./views/events/delete.html", {
-    calendarEvent, currentUser: ctx.state.user
+    calendarEvent,
+    currentUser: ctx.state.user,
   });
-})
+});
 
 router.post("/delete/:id/", async (ctx) => {
   if (ctx.state.user == null) ctx.response.redirect("/login/");

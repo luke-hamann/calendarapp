@@ -2,12 +2,12 @@ import CalendarEvent from "./calendarEvent.ts";
 
 export default class CalendarEventForm {
   id: number = 0;
-  datetime: string = '';
-  time: string = '';
-  description: string = '';
+  datetime: string = "";
+  time: string = "";
+  description: string = "";
   broadcast: boolean = false;
 
-  public static fromParams(params: URLSearchParams) : CalendarEventForm {
+  public static fromParams(params: URLSearchParams): CalendarEventForm {
     const form = new CalendarEventForm();
     form.datetime = params.get("datetime") ?? "";
     form.description = params.get("description") ?? "";
@@ -15,7 +15,9 @@ export default class CalendarEventForm {
     return form;
   }
 
-  public static fromCalendarEvent(calendarEvent: CalendarEvent): CalendarEventForm {
+  public static fromCalendarEvent(
+    calendarEvent: CalendarEvent,
+  ): CalendarEventForm {
     const form = new CalendarEventForm();
     form.datetime = calendarEvent.timestamp.toISOString().slice(0, 19);
     form.description = calendarEvent.description;
@@ -23,7 +25,7 @@ export default class CalendarEventForm {
     return form;
   }
 
-  public getErrors() : string[] {
+  public getErrors(): string[] {
     const errors: string[] = [];
     if (this.datetime == "") {
       errors.push("Date/time is required.");
@@ -45,12 +47,12 @@ export default class CalendarEventForm {
     return (this.getErrors().length == 0);
   }
 
-  public getCalendarEvent() : CalendarEvent {
+  public getCalendarEvent(): CalendarEvent {
     return new CalendarEvent(
       0,
       this.description,
       new Date(this.datetime),
-      this.broadcast
+      this.broadcast,
     );
   }
 }

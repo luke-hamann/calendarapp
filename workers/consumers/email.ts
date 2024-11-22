@@ -23,6 +23,6 @@ while (running) {
       const json = JSON.parse(new TextDecoder().decode(data));
       await handler(json);
       await channel.ack({ deliveryTag: args.deliveryTag });
-    }
+    },
   );
 }

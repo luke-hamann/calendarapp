@@ -24,7 +24,7 @@ while (running) {
     const promise = channel.publish(
       { routingKey: row.subscriptiontype },
       { contentType: "application/json" },
-      new TextEncoder().encode(JSON.stringify(row))
+      new TextEncoder().encode(JSON.stringify(row)),
     );
     promises.push(promise);
   }

@@ -7,29 +7,34 @@ const router = new Router();
 
 router.get("/subscribe/", (ctx) => {
   ctx.response.body = nunjucks.render("./views/subscriptions/subscribe.html", {
-    currentUser: ctx.state.user
+    currentUser: ctx.state.user,
   });
 });
 
 router.post("/subscribe/", async (ctx) => {
   const form = await ctx.request.body.form();
   const target = form.get("target") ?? "";
-  const discordPattern = new RegExp(/^https:\/\/discord\.com\/api\/webhooks\/\d{19}\/[\w\d-]{68}$/);
+  const discordPattern = new RegExp(
+    /^https:\/\/discord\.com\/api\/webhooks\/\d{19}\/[\w\d-]{68}$/,
+  );
 
   let type: string;
   if (discordPattern.test(target)) {
     type = "discord";
   } else {
-    ctx.response.body = nunjucks.render("./views/subscriptions/subscribe.html", {
-      error: "Invalid subscription"
-    });
+    ctx.response.body = nunjucks.render(
+      "./views/subscriptions/subscribe.html",
+      {
+        error: "Invalid subscription",
+      },
+    );
     return;
   }
 
   const subscription: Subscription = new Subscription(0, type, target);
   await CalendarDatabase.addSubscription(subscription);
   ctx.response.body = nunjucks.render("./views/subscribeSuccess.html", {
-    currentUser: ctx.state.user
+    currentUser: ctx.state.user,
   });
 });
 

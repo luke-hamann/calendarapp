@@ -10,6 +10,13 @@ router.get("/", (ctx) => {
   ctx.response.redirect(`/${year}/`);
 });
 
+router.get("/index.rss", async (ctx) => {
+  const calendarEvents = await CalendarDatabase.getRecentPastEvents(50);
+  ctx.response.body = nunjucks.render("./views/calendar/index.rss", {
+    calendarEvents
+  })
+});
+
 router.get("/:year/", async (ctx, next) => {
   const year = Number(ctx.params.year);
   const yearsRange = await CalendarDatabase.getMinMaxYears();
@@ -21,9 +28,15 @@ router.get("/:year/", async (ctx, next) => {
 
   if (year < yearsRange.min || year > yearsRange.max) return;
 
-  const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(year);
+  const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(
+    year,
+  );
   ctx.response.body = nunjucks.render("./views/calendar/list.html", {
-    calendarEvents, year, yearsRange, "currentUser": ctx.state.user });
+    calendarEvents,
+    year,
+    yearsRange,
+    "currentUser": ctx.state.user,
+  });
 });
 
 export default router;

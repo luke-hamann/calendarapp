@@ -14,7 +14,7 @@ new Worker(import.meta.resolve("./workers/consumers.ts"), { type: "module" });
 
 /* Start app */
 
-const app = new Application<{user: User | null}>();
+const app = new Application<{ user: User | null }>();
 
 app.use(async (ctx, next) => {
   const cookieValue = await ctx.cookies.get("userId");

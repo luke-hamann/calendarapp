@@ -8,7 +8,7 @@ const router = new Router();
 router.get("/login/", (ctx) => {
   if (ctx.state.user) ctx.response.redirect("/");
   ctx.response.body = nunjucks.render("./views/authentication/login.html");
-})
+});
 
 router.post("/login/", async (ctx) => {
   if (ctx.state.user) ctx.response.redirect("/");
@@ -19,7 +19,8 @@ router.post("/login/", async (ctx) => {
 
   if (!user.isValid()) {
     ctx.response.body = nunjucks.render("./views/authentication/login.html", {
-      user, errors: user.getErrors()
+      user,
+      errors: user.getErrors(),
     });
     return;
   }
@@ -28,14 +29,15 @@ router.post("/login/", async (ctx) => {
 
   if (user.id == 0) {
     ctx.response.body = nunjucks.render("./views/authentication/login.html", {
-      user, errors: ["Invalid credentials."]
+      user,
+      errors: ["Invalid credentials."],
     });
     return;
   }
 
   ctx.state.user = user;
   ctx.response.redirect("/");
-})
+});
 
 router.post("/logout/", (ctx) => {
   ctx.state.user = null;

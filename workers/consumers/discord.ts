@@ -5,7 +5,7 @@ import CalendarDatabase from "../../models/calendarDatabase.ts";
 async function handler(message: IMessage): Promise<void> {
   const url: string = message.subscriptionurl;
   const webhookContent: string = JSON.stringify({
-    content: message.eventdescription
+    content: message.eventdescription,
   });
 
   console.log(webhookContent);
@@ -14,15 +14,15 @@ async function handler(message: IMessage): Promise<void> {
   fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: webhookContent
+    body: webhookContent,
   })
-  .then(async (response) => {
-    if (response.status == 401) {
-      await CalendarDatabase.deleteSubscriptionByUrl(url);
-    }
-  });
+    .then(async (response) => {
+      if (response.status == 401) {
+        await CalendarDatabase.deleteSubscriptionByUrl(url);
+      }
+    });
 }
 
 // deno-lint-ignore no-var
@@ -42,6 +42,6 @@ while (running) {
       const json = JSON.parse(new TextDecoder().decode(data));
       await handler(json);
       await channel.ack({ deliveryTag: args.deliveryTag });
-    }
+    },
   );
 }
