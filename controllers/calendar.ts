@@ -13,8 +13,8 @@ router.get("/", (ctx) => {
 router.get("/index.rss", async (ctx) => {
   const calendarEvents = await CalendarDatabase.getRecentPastEvents(50);
   ctx.response.body = nunjucks.render("./views/calendar/index.rss", {
-    calendarEvents
-  })
+    calendarEvents,
+  });
 });
 
 router.get("/:year/", async (ctx, next) => {

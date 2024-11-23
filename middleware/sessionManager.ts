@@ -17,4 +17,4 @@ export default async (ctx: Context, next: Next) => {
 
   if (ctx.state.user == null) ctx.cookies.delete("userId");
   else ctx.cookies.set("userId", ctx.state.user!.id.toString());
-}
+};
