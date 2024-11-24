@@ -1,5 +1,6 @@
 import sql from "./_db.ts";
 import CalendarEvent from "./calendarEvent.ts";
+import Message from "./message.ts";
 import Subscription from "./subscription.ts";
 import User from "./user.ts";
 
@@ -144,9 +145,9 @@ export default abstract class CalendarDatabase {
     return rows[0].id;
   }
 
-  public static getUnpublishedMessages(date: Date) {
+  public static async *getUnpublishedMessages(date: Date) {
     const seconds = Math.round(date.getTime() / 1000);
-    return sql`
+    const query = sql`
       SELECT
         Events.id eventId,
         Events.description eventDescription,
@@ -171,6 +172,19 @@ export default abstract class CalendarDatabase {
       WHERE Events.timestamp <= to_timestamp(${seconds}) AND
         Events.broadcast = true
     `;
+
+    const cursor = query.cursor();
+    for await (const [row] of cursor) {
+      yield new Message(
+        row["eventid"],
+        row["eventdescription"],
+        row["eventtimestamp"],
+        row["eventbroadcast"],
+        row["subscriptionid"],
+        row["subscriptiontype"],
+        row["subscriptionurl"],
+      );
+    }
   }
 
   public static async setEventsAsBroadcast(

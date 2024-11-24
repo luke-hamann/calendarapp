@@ -15,29 +15,31 @@ for (const queue in queues) {
 }
 
 await channel.declareExchange({
-  exchange: "pushExchange", type: "fanout", durable: false
+  exchange: "pushExchange",
+  type: "fanout",
+  durable: false,
 });
 
 while (running) {
-  const sql = CalendarDatabase.getUnpublishedMessages(new Date());
-  const cursor = sql.cursor();
+  const messages = CalendarDatabase.getUnpublishedMessages(new Date());
   const promises: Promise<void>[] = [];
   const eventIds: Set<number> = new Set();
-  for await (const [row] of cursor) {
+  for await (const message of messages) {
     let basicPublishArgs = {};
-    if (queues.includes(row.subscriptiontype)) {
-      basicPublishArgs = { routingKey: row.subscriptiontype };
-    } else if (row.subscriptiontype == "push") {
+    if (queues.includes(message.subscriptionType)) {
+      basicPublishArgs = { routingKey: message.subscriptionType };
+    } else if (message.subscriptionType == "push") {
       basicPublishArgs = { exchange: "pushExchange" };
     }
 
+    const data = new TextEncoder().encode(JSON.stringify(message));
     const promise = channel.publish(
       basicPublishArgs,
       { contentType: "application/json" },
-      new TextEncoder().encode(JSON.stringify(row))
+      data
     );
 
-    eventIds.add(row.eventid);
+    eventIds.add(message.eventId);
     promises.push(promise);
   }
   promises.push(CalendarDatabase.setEventsAsBroadcast(eventIds));

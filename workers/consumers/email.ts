@@ -1,8 +1,8 @@
-import IMessage from "../models/message.ts";
-import Consumer from "../models/consumer.ts";
+import Message from "../../models/message.ts";
+import Consumer from "../../models/consumer.ts";
 
-function handler(message: IMessage): Promise<void> {
-  console.log(`emailed ${message.subscriptionurl} ${message.eventdescription}`);
+function handler(message: Message): Promise<void> {
+  console.log(`emailed ${message.subscriptionUrl} ${message.eventDescription}`);
   return Promise.resolve();
 }
 

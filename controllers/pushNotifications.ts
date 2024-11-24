@@ -10,17 +10,21 @@ router.get("/notifications/", async (ctx) => {
 
   await channel.declareQueue({ exclusive: true });
   await channel.declareExchange({
-    exchange: "pushExchange", type: "fanout", durable: false
+    exchange: "pushExchange",
+    type: "fanout",
+    durable: false,
   });
   await channel.bindQueue({ exchange: "pushExchange" });
 
   let running = true;
-  target.addEventListener("close", () => { running = false; });
+  target.addEventListener("close", () => {
+    running = false;
+  });
 
   while (running) {
-    await channel.consume({}, (args, _props, data) => {
+    await channel.consume({}, (_args, _props, data) => {
       const json = JSON.parse(new TextDecoder().decode(data));
-      target.dispatchMessage(json.eventdescription);
+      target.dispatchMessage(json["eventDescription"]);
     });
   }
 

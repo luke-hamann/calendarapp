@@ -1,11 +1,11 @@
 import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
-import IMessage from "./message.ts";
+import Message from "./message.ts";
 
 export default class Consumer {
   queueName: string;
-  handler: (m: IMessage) => Promise<void>;
+  handler: (m: Message) => Promise<void>;
 
-  constructor(queueName: string, handler: (m: IMessage) => Promise<void>) {
+  constructor(queueName: string, handler: (m: Message) => Promise<void>) {
     this.queueName = queueName;
     this.handler = handler;
   }
@@ -25,7 +25,8 @@ export default class Consumer {
         { queue: this.queueName },
         async (args, _props, data) => {
           const json = JSON.parse(new TextDecoder().decode(data));
-          await this.handler(json);
+          const message = Message.fromJSON(json);
+          await this.handler(message);
           await channel.ack({ deliveryTag: args.deliveryTag });
         },
       );
