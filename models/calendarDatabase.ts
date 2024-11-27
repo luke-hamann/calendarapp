@@ -109,8 +109,34 @@ export default abstract class CalendarDatabase {
     if (result.length > 0) return;
 
     await sql`
-      INSERT INTO Subscriptions (type, url)
-      VALUES (${subscription.type}, ${subscription.url})
+      INSERT INTO Subscriptions (type, url, secretToken)
+      VALUES (${subscription.type}, ${subscription.url}, ${subscription.secretToken})
+    `;
+  }
+
+  public static async getSubscriptionByToken(
+    token: string,
+  ): Promise<Subscription> {
+    const rows = await sql`
+      SELECT *
+      FROM Subscriptions
+      WHERE secretToken = ${token}
+    ` as { id: number; type: string; url: string; secretToken: string }[];
+
+    if (rows.length == 0) throw new Error("Subscription not found.");
+
+    return new Subscription(
+      rows[0].id,
+      rows[0].type,
+      rows[0].url,
+      rows[0].secretToken,
+    );
+  }
+
+  public static async deleteSubscriptionByToken(token: string): Promise<void> {
+    await sql`
+      DELETE FROM Subscriptions
+      WHERE secretToken = ${token}
     `;
   }
 
@@ -155,7 +181,8 @@ export default abstract class CalendarDatabase {
         Events.broadcast eventBroadcast,
         Subscriptions.id subscriptionId,
         Subscriptions.type subscriptionType,
-        Subscriptions.url subscriptionUrl
+        Subscriptions.url subscriptionUrl,
+        Subscriptions.secretToken subscriptionSecretToken
       FROM Events, Subscriptions
       WHERE Events.timestamp <= to_timestamp(${seconds}) AND
         Events.broadcast = true
@@ -167,7 +194,8 @@ export default abstract class CalendarDatabase {
         Events.broadcast eventBroadcast,
         0 subscriptionId,
         'push' subscriptionType,
-        '' subscriptionUrl
+        '' subscriptionUrl,
+        '' subscriptionSecretToken
       FROM Events
       WHERE Events.timestamp <= to_timestamp(${seconds}) AND
         Events.broadcast = true
@@ -183,6 +211,7 @@ export default abstract class CalendarDatabase {
         row["subscriptionid"],
         row["subscriptiontype"],
         row["subscriptionurl"],
+        row["subscriptionsecrettoken"]
       );
     }
   }

@@ -6,6 +6,7 @@ export default class Message {
   subscriptionId: number;
   subscriptionType: string;
   subscriptionUrl: string;
+  subscriptionSecretToken: string;
 
   constructor(
     eventId: number,
@@ -15,6 +16,7 @@ export default class Message {
     subscriptionId: number,
     subscriptionType: string,
     subscriptionUrl: string,
+    subscriptionSecretToken: string
   ) {
     this.eventId = eventId;
     this.eventDescription = eventDescription;
@@ -23,6 +25,7 @@ export default class Message {
     this.subscriptionId = subscriptionId;
     this.subscriptionType = subscriptionType;
     this.subscriptionUrl = subscriptionUrl;
+    this.subscriptionSecretToken = subscriptionSecretToken;
   }
 
   static fromJSON(json: any) {
@@ -34,6 +37,7 @@ export default class Message {
       json["subscriptionId"],
       json["subscriptionType"],
       json["subscriptionUrl"],
+      json["subscriptionSecretToken"]
     );
   }
 }

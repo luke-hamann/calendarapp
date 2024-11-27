@@ -16,7 +16,8 @@ CREATE TABLE Events (
 CREATE TABLE Subscriptions (
     id bigint GENERATED ALWAYS AS IDENTITY,
     type varchar(16) NOT NULL,
-    url varchar(500) NOT NULL
+    url varchar(500) NOT NULL UNIQUE,
+    secretToken varchar(500) UNIQUE
 );
 
 CREATE TABLE Administrators (
