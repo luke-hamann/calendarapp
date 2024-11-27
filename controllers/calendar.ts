@@ -22,10 +22,9 @@ router.get("/:year/", async (ctx, next) => {
   const yearsRange = await CalendarDatabase.getMinMaxYears();
 
   if (isNaN(year)) {
-    next();
+    await next();
     return;
   }
-
   if (year < yearsRange.min || year > yearsRange.max) return;
 
   const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(

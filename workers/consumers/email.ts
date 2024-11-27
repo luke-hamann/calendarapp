@@ -22,7 +22,7 @@ async function handler(message: Message): Promise<void> {
   const to = message.subscriptionUrl;
   const subject = message.eventDescription;
   const text = message.eventDescription + "\n\n" + message.eventTimestamp +
-    `\n\nhttp://localhost:8080/unsubscribe/${message.subscriptionSecretToken}/`;
+    `\n\nhttp://localhost:8080/unsubscribe?token=${message.subscriptionSecretToken}/`;
   
   const email = { from, to, subject, text };
 

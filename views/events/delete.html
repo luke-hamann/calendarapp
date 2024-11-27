@@ -3,13 +3,17 @@
 {% block title %}Confirm Deletion{% endblock %}
 
 {% block content %}
-  <form action="/delete/{{ calendarEvent.id }}/" method="post">
-    <div>
-      Are you sure you want to delete "{{ calendarEvent.description.slice(0, 10) }}"?
-    </div>
-    <div>
-      <input type="submit" value="Yes" />
-      <a href="/{{ calendarEvent.timestamp.getUTCFullYear() }}/">Cancel</a>
-    </div>
-  </form>
+  <div class="form-wrapper">
+    <form action="/delete/{{ calendarEvent.id }}/" method="post" class="form">
+      <h1>Confirm Deletion</h1>
+      <div>
+        Are you sure?
+      </div>
+      <div>
+        <input type="submit" value="Yes" class="btn btn-red" />
+        <a href="/{{ calendarEvent.timestamp.getUTCFullYear() }}/"
+          class="btn btn-cancel">Cancel</a>
+      </div>
+    </form>
+  </div>
 {% endblock %}

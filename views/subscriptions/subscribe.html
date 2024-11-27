@@ -3,23 +3,34 @@
 {% block title %}Subscribe{% endblock %}
 
 {% block content %}
-    <h1>
+  <div class="form-wrapper">
+    <div class="form">
+      <h1>
         Subscribe
-    </h1>
-    <form action="/subscribe/" method="post">
-        {% if error %}
-            <div>
-                {{ error }}
-            </div>
-        {% endif %}
-        <div>
-            <input type="password" name="target" />
-        </div>
-        <div>
-            <input type="submit" value="Subscribe" />
-        </div>
-    </form>
-    <p>
-        Accepted: Email, Discord webhook
-    </p>
+      </h1>
+      {% if errors %}
+        <ul>
+          {% for error in errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <h2>
+        Email
+      </h2>
+      <form action="/subscribe/" method="post">
+        <input type="hidden" name="type" value="email" />
+        <input type="text" name="target" />
+        <input type="submit" value="Subscribe" />
+      </form>
+      <h2>
+        Discord
+      </h2>
+      <form action="/subscribe/" method="post">
+        <input type="hidden" name="type" value="discord" />
+        <input type="password" name="target" />
+        <input type="submit" value="Subscribe" />
+      </form>
+    </div>
+  </div>
 {% endblock %}

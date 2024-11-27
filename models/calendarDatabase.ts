@@ -133,17 +133,10 @@ export default abstract class CalendarDatabase {
     );
   }
 
-  public static async deleteSubscriptionByToken(token: string): Promise<void> {
+  public static async deleteSubscription(subscription: Subscription): Promise<void> {
     await sql`
       DELETE FROM Subscriptions
-      WHERE secretToken = ${token}
-    `;
-  }
-
-  public static async deleteSubscriptionByUrl(url: string): Promise<void> {
-    await sql`
-      DELETE FROM subscriptions
-      WHERE url = ${url}
+      WHERE id = ${subscription.id}
     `;
   }
 

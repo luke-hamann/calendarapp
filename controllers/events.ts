@@ -117,9 +117,8 @@ router.post("/delete/:id/", async (ctx) => {
   } catch {
     return;
   }
-  const year = calendarEvent.timestamp.getUTCFullYear();
   await CalendarDatabase.deleteEvent(calendarEvent);
-  ctx.response.redirect(`/${year}/`);
+  ctx.response.redirect("/");
 });
 
 export default router;

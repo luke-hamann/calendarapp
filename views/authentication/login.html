@@ -3,25 +3,26 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-  <h1>Login</h1>
-  <form action="/login/" method="post">
-    {% if errors %}
-      <ul>
-        {% for error in errors %}
-          <li>{{ error }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-    <div>
-      <label for="name">Name</label>
-      <input type="text" name="name" id="name" value="{% if user %}{{ user.name }}{% endif %}" />
-    </div>
-    <div>
-      <label for="password">Password</label>
-      <input type="password" name="password" id="password" />
-    </div>
-    <div>
-      <input type="submit" value="Login">
-    </div>
-  </form>
+  <div class="form-wrapper">
+    <form action="/login/" method="post" class="form">
+      <h1>Login</h1>
+      {% if errors %}
+        <ul class="form-errors">
+          {% for error in errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <div>
+        <input type="text" name="name" id="name" placeholder="Name"
+          value="{% if user %}{{ user.name }}{% endif %}" />
+      </div>
+      <div>
+        <input type="password" name="password" id="password" placeholder="Password" />
+      </div>
+      <div>
+        <input type="submit" value="Login" class="btn btn-blue"
+      </div>
+    </form>
+  </div>
 {% endblock %}

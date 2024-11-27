@@ -3,6 +3,8 @@ import nunjucks from "npm:nunjucks";
 import User from "../models/user.ts";
 import CalendarDatabase from "../models/calendarDatabase.ts";
 
+nunjucks.configure('', { noCache: true });
+
 const router = new Router();
 
 router.get("/login/", (ctx) => {

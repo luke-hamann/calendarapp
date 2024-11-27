@@ -10,22 +10,25 @@
   <body>
     <header>
       <nav>
-        <ul>
-          <li><a href="/">Calendar</a></li>
-          <li><a href="/subscribe/">Subscribe</a></li>
+        <ul class="navbar-list">
+          <li><a href="/" class="navbar-button">Calendar</a></li>
+          <li><a href="/subscribe/" class="navbar-button">Subscribe</a></li>
+          <li><a href="/unsubscribe/" class="navbar-button">Unsubscribe</a></li>
           {% if currentUser %}
             <li>
               <form action="/logout/" method="post">
-                <input type="submit" value="Logout" />
+                <input type="submit" value="Logout" class="navbar-button" />
               </form>
             </li>
           {% else %}
-            <li><a href="/login/">Login</a></li>
+            <li><a href="/login/" class="navbar-button">Login</a></li>
           {% endif %}
         </ul>
       </nav>
     </header>
-    {% block content %}{% endblock %}
+    <main>
+      {% block content %}{% endblock %}
+    </main>
     <footer>
       &copy; 2024 Luke Hamann
     </footer>

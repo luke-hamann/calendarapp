@@ -1,5 +1,11 @@
 @charset 'utf-8';
 
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   font-family:
     system-ui,
@@ -13,4 +19,204 @@
     "Open Sans",
     "Helvetica Neue",
     sans-serif;
+
+  --light-bg: lightgreen;
+}
+
+/* Sticky footer */
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex-grow: 1;
+}
+
+/* headings */
+
+header {
+  position: sticky;
+  top: 0;
+}
+
+.header-year {
+  position: sticky;
+  top: 3rem;
+}
+
+/* Navbar */
+
+.navbar-list {
+  background-color: var(--light-bg);
+  display: flex;
+  list-style: none;
+  overflow-y: auto;
+
+  form {
+    height: 100%;
+  }
+
+  .navbar-button {
+    color: black;
+    text-decoration: none;
+    display: block;
+    padding: 1rem;
+    background-color: transparent;
+    border: none;
+    font-size: initial;
+    height: 100%;
+
+    &:hover {
+      background-color: green;
+      color: white;
+    }
+  }
+}
+
+.margin-left {
+  margin-left: 1rem;
+}
+
+/* Forms */
+
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .form {
+    flex-basis: 30rem;
+    padding: 1rem;
+    max-width: 20rem;
+
+    h1 {
+      text-align: center;
+    }
+
+    p {
+      margin: 1rem 0;
+    }
+
+    .form-errors {
+      color: red;
+      list-style-type: none;
+    }
+
+    label, input, button {
+      display: block;
+      padding: 1rem;
+      margin: 1rem 0;
+      width: 100%;
+    }
+
+    .broadcast-checkbox {
+      display: flex;
+    }
+
+    .btn-cancel {
+      text-align: center;
+      width: 100%;
+    }
+  }
+}
+
+/* Headings */
+
+h1, h2 {
+  padding: 1rem;
+}
+
+/* Buttons */
+
+.btn {
+  border: none;
+  border-radius: 5pt;
+  display: inline-block;
+  padding: 1rem;
+  text-decoration: none;
+  font-size: initial;
+}
+
+.btn-red {
+  background-color: rgb(255, 64, 64);
+  color: white;
+}
+
+.btn-yellow {
+  background-color: yellow;
+  color: black;
+}
+
+.btn-green {
+  background-color: green;
+  color: white;
+}
+
+.btn-blue {
+  background-color: rgb(100, 100, 255);
+  color: white;
+}
+
+.btn-cancel {
+  background-color: lightgray;
+  color: black;
+}
+
+/* Calendar year list */
+
+.calendar-years {
+  display: flex;
+  list-style: none;
+  overflow-x: auto;
+
+  & > * > * {
+    display: block;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 50rem) {
+  .event-container {
+    flex-direction: column;
+  }
+}
+
+.event-container {
+  display: flex;
+  margin: 1rem;
+  border: 1px solid;
+  border-radius: 5pt;
+
+  .date, .description, .controls {
+    padding: 1rem;
+  }
+
+  .date {
+    flex-grow: 0;
+  }
+
+  .description {
+    flex-grow: 1;
+  }
+
+  .controls {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  .controls > a {
+    display: inline-block;
+    padding: 1rem;
+  }
+}
+
+/* Footer */
+
+footer {
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--light-bg);
 }

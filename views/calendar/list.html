@@ -3,46 +3,59 @@
 {% block title %}Calendar{% endblock %}
 
 {% block content %}
-  <div>
+  <ul class="calendar-years">
     {% for y in range(yearsRange.min, yearsRange.max) %}
-      <a href="/{{ y }}/">{{ y }}</a>
+      <li>
+        <a href="/{{ y }}/">{{ y }}</a>
+      </li>
     {% endfor %}
-  </div>
-  <h1>
+  </ul>
+  <ul class="calendar-years">
+    {% for m in ["January", "February", "March", "April", "May", "June",
+                 "July", "August", "September", "October", "November", "December"] %}
+      <li>
+        <a href="#{{ m.toLowerCase() }}">{{ m }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <h1 class="heading-year">
     {{ year }}
   </h1>
   {% if currentUser %}
-    <form action="/add/" method="post">
-      <span>Add event:</span>
-      <input type="datetime-local" name="datetime" step="1" />
-      <input type="text" name="description" />
-      <input type="checkbox" name="broadcast" id="broadcast" checked />
-      <label for="broadcast">Broadcast</label>
-      <input type="submit" value="Add" />
-    </form>
+    <div>
+      <a href="/add/" class="btn btn-blue margin-left">
+        &plus; Add Event
+      </a>
+    </div>
   {% endif %}
   {% if calendarEvents.length > 0 %}
-    <table>
-      {% for calendarEvent in calendarEvents %}
-        <tr data-date="{{ calendarEvent.timestamp }}">
-          <td>
-            <kbd>
-              {{ calendarEvent.timestamp.toString().slice(0, 24) }}
-            </kbd>
-          </td>
-          <td>
-            {{ calendarEvent.description }}
-          </td>
-          {% if currentUser %}
-            <td>
-              <a href="/edit/{{ calendarEvent.id }}/">edit</a>
-            </td>
-            <td>
-              <a href="/delete/{{ calendarEvent.id }}/">delete</a>
-            </td>
-          {% endif %}
-        </tr>
-      {% endfor %}
-    </table>
+    {% set months = ["January", "February", "March", "April", "May", "June",
+                     "July", "August", "September", "October", "November", "December"] %}
+    {% set month = -1 %}
+    {% for calendarEvent in calendarEvents %}
+      {% if calendarEvent.timestamp.getUTCMonth() > month %}
+        {% set month = calendarEvent.timestamp.getUTCMonth() %}
+        {% set monthName = months[month] %}
+        <h2 id="{{ monthName.toLowerCase() }}">
+          <a href="#{{ monthName.toLowerCase() }}">{{ monthName }}</a>
+        </h2>
+      {% endif %}
+      <div class="event-container">
+        <div class="date">
+          <kbd>
+            {{ calendarEvent.timestamp.toString().slice(0, 24) }}
+          </kbd>
+        </div>
+        <div class="description">
+          {{ calendarEvent.description }}
+        </div>
+        {% if currentUser %}
+          <div class="controls">
+            <a href="/edit/{{ calendarEvent.id }}/" class="btn btn-yellow">edit</a>
+            <a href="/delete/{{ calendarEvent.id }}/" class="btn btn-red">delete</a>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
   {% endif %}
 {% endblock %}

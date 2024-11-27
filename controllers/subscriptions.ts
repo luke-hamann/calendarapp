@@ -13,58 +13,69 @@ router.get("/subscribe/", (ctx) => {
 
 router.post("/subscribe/", async (ctx) => {
   const form = await ctx.request.body.form();
+
+  const type = form.get("type") ?? "";
+  if (type != 'email' && type != 'discord') {
+    return;
+  }
+
   const target = form.get("target") ?? "";
+  const emailPattern = new RegExp(/^[^\n]+@[^\n]+$/);
   const discordPattern = new RegExp(
     /^https:\/\/discord\.com\/api\/webhooks\/\d{19}\/[\w\d-]{68}$/,
   );
-  const emailPattern = new RegExp(/^[^\n]+@[^\n]+$/);
+  const errors = [];
+  if (type == "email" && !emailPattern.test(target)) {
+    errors.push("Invalid email address.");
+  } else if (type == "discord" && !discordPattern.test(target)) {
+    errors.push("Invalid discord webhook.");
+  }
 
-  let type: string;
-  if (discordPattern.test(target)) {
-    type = "discord";
-  } else if (emailPattern.test(target)) {
-    type = "email";
-  } else {
+  if (errors.length > 0) {
     ctx.response.body = nunjucks.render(
       "./views/subscriptions/subscribe.html",
       {
         error: "Invalid subscription",
       },
     );
-    return;
   }
 
   const subscription: Subscription = new Subscription(0, type, target);
+  if (type == 'discord') {
+    subscription.secretToken = target;
+  }
+
   await CalendarDatabase.addSubscription(subscription);
   ctx.response.body = nunjucks.render("./views/subscriptions/subscribeSuccess.html", {
     currentUser: ctx.state.user
   });
 });
 
-router.get("/unsubscribe/:token/", (ctx) => {
-  try {
-    CalendarDatabase.getSubscriptionByToken(ctx.params.token);
-  } catch {
-    return;
-  }
-
+router.get("/unsubscribe/", (ctx) => {
+  const token = ctx.request.url.searchParams.get("token") ?? "";
   ctx.response.body = nunjucks.render(
     "./views/subscriptions/unsubscribe.html",
-    {
-      currentUser: ctx.state.user,
-      token: ctx.params.token
-    },
+    { token, currentUser : ctx.state.user }
   );
 });
 
-router.post("/unsubscribe/:token/", async (ctx) => {
+router.post("/unsubscribe/", async (ctx) => {
+  const form = await ctx.request.body.form();
+  const token = form.get("token") ?? "";
+
+  let subscription: Subscription;
   try {
-    await CalendarDatabase.getSubscriptionByToken(ctx.params.token);
+    subscription = await CalendarDatabase.getSubscriptionByToken(token);
   } catch {
+    const errors = ["That subscription could not be found."];
+    ctx.response.body = nunjucks.render(
+      "./views/subscriptions/unsubscribe.html",
+      { token, errors, currentUser: ctx.state.user }
+    );
     return;
   }
 
-  await CalendarDatabase.deleteSubscriptionByToken(ctx.params.token);
+  await CalendarDatabase.deleteSubscription(subscription);
   ctx.response.body = nunjucks.render(
     "./views/subscriptions/unsubscribeSuccess.html",
     {
