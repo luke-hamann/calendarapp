@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="/css/main.css" />
-    <script src="/js/pushNotifications.js"></script>
+    <script src="/js/pushNotifications.js" type="module"></script>
   </head>
   <body>
     <header>
@@ -14,6 +14,7 @@
           <li><a href="/" class="navbar-button">Calendar</a></li>
           <li><a href="/subscribe/" class="navbar-button">Subscribe</a></li>
           <li><a href="/unsubscribe/" class="navbar-button">Unsubscribe</a></li>
+          <li id="web-push-toggle" class="navbar-button">Push OFF</li>
           {% if currentUser %}
             <li>
               <form action="/logout/" method="post">

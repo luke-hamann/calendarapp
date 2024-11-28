@@ -9,7 +9,7 @@
         {{ title }}
       </h1>
       {% if calendarEventForm and not calendarEventForm.isValid() %}
-        <ul>
+        <ul class="form-errors">
           {% for error in calendarEventForm.getErrors() %}
             <li>{{ error }}</li>
           {% endfor %}

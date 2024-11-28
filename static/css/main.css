@@ -54,6 +54,7 @@ header {
   display: flex;
   list-style: none;
   overflow-y: auto;
+  user-select: none;
 
   form {
     height: 100%;
