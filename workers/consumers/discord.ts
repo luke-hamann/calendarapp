@@ -1,35 +1,40 @@
-import Message from "../../models/message.ts";
 import Consumer from "../../models/consumer.ts";
+import Message from "../../models/message.ts";
+import Subscription from "../../models/subscription.ts";
 import CalendarDatabase from "../../models/calendarDatabase.ts";
 
 const DISCORD_ENABLED = Deno.env.get("DISCORD_ENABLED") == "true";
 
 async function handler(message: Message): Promise<void> {
   const url = message.subscriptionUrl;
-  const title = message.eventDescription;
-  const date = message.eventTimestamp.toLocaleString();
-  const description = `${date}\n\n[View in calendar](http://localhost:8080/)`;
 
-  const webhookContent = {
+  const payload = {
+    username: "Coolander",
+    avatar_url: Deno.env.get("DISCORD_AVATAR_URL"),
     content: null,
-    embeds: [{ title, description }],
+    embeds: [{
+      title: message.eventDescription,
+      description: message.eventTimestamp.toLocaleString() + '\n\n' +
+        `[View in calendar]` +
+        `(${Deno.env.get("BASE_URL")}/${message.eventTimestamp.getUTCFullYear()}/)`
+    }]
   };
 
-  if (DISCORD_ENABLED) {
-    await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(webhookContent),
-    })
-      .then(async (response) => {
-        if (response.status == 401) {
-          await CalendarDatabase.deleteSubscriptionByUrl(url);
-        }
-      });
-  } else {
-    console.log(webhookContent);
+  if (!DISCORD_ENABLED) {
+    console.log(payload);
+    return;
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (response.status == 401) {
+    await CalendarDatabase.deleteSubscription(new Subscription(0, url, ''));
   }
 }
 

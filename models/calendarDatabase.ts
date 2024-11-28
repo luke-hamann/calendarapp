@@ -136,7 +136,8 @@ export default abstract class CalendarDatabase {
   public static async deleteSubscription(subscription: Subscription): Promise<void> {
     await sql`
       DELETE FROM Subscriptions
-      WHERE id = ${subscription.id}
+      WHERE id = ${subscription.id} OR
+        url = ${subscription.url}
     `;
   }
 
