@@ -8,7 +8,7 @@ eventSource.onmessage = (event) => {
 
   if (hasPermission() && isWebPushEnabled()) {
     console.log("Pushing...");
-    new Notification(event.data);
+    new Notification("Coolander", { body: event.data, icon: "/img/icon.png" });
   }
 };
 
