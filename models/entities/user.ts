@@ -11,12 +11,15 @@ export default class User {
 
   getErrors(): string[] {
     const errors = [];
-    if (this.name == null || this.name == "") {
+
+    if (this.name == "") {
       errors.push("Please enter a name.");
     }
-    if (this.password == null || this.password == "") {
+
+    if (this.password == "") {
       errors.push("Please enter a password.");
     }
+
     return errors;
   }
 
