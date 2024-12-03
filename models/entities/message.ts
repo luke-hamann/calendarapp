@@ -1,3 +1,14 @@
+interface MessageJSON {
+  eventId: number;
+  eventDescription: string;
+  eventTimestamp: string;
+  eventBroadcast: boolean;
+  subscriptionId: number;
+  subscriptionType: string;
+  subscriptionTarget: string;
+  subscriptionSecretToken: string;
+}
+
 export default class Message {
   eventId: number;
   eventDescription: string;
@@ -5,7 +16,7 @@ export default class Message {
   eventBroadcast: boolean;
   subscriptionId: number;
   subscriptionType: string;
-  subscriptionUrl: string;
+  subscriptionTarget: string;
   subscriptionSecretToken: string;
 
   constructor(
@@ -15,8 +26,8 @@ export default class Message {
     eventBroadcast: boolean,
     subscriptionId: number,
     subscriptionType: string,
-    subscriptionUrl: string,
-    subscriptionSecretToken: string
+    subscriptionTarget: string,
+    subscriptionSecretToken: string,
   ) {
     this.eventId = eventId;
     this.eventDescription = eventDescription;
@@ -24,20 +35,20 @@ export default class Message {
     this.eventBroadcast = eventBroadcast;
     this.subscriptionId = subscriptionId;
     this.subscriptionType = subscriptionType;
-    this.subscriptionUrl = subscriptionUrl;
+    this.subscriptionTarget = subscriptionTarget;
     this.subscriptionSecretToken = subscriptionSecretToken;
   }
 
-  static fromJSON(json: any) {
+  static fromJSON(json: MessageJSON) {
     return new Message(
-      json["eventId"],
-      json["eventDescription"],
-      new Date(json["eventTimestamp"]),
-      json["eventBroadcast"],
-      json["subscriptionId"],
-      json["subscriptionType"],
-      json["subscriptionUrl"],
-      json["subscriptionSecretToken"]
+      json.eventId,
+      json.eventDescription,
+      new Date(json.eventTimestamp + " UTC"),
+      json.eventBroadcast,
+      json.subscriptionId,
+      json.subscriptionType,
+      json.subscriptionTarget,
+      json.subscriptionSecretToken,
     );
   }
 }
