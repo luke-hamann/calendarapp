@@ -24,17 +24,21 @@ async function handler(message: Message): Promise<void> {
     console.log(payload);
     return;
   }
+  
+  let response = { status: 0 };
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch {}
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (response.status == 401) {
-    await CalendarDatabase.deleteSubscription(new Subscription(0, url, ''));
+  // Delete the subscription if we know it failed
+  if (response.status > 0 && response.status != 204) {
+    await CalendarDatabase.deleteSubscription(new Subscription(0, "discord", url, url));
   }
 }
 
