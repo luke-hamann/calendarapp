@@ -1,9 +1,7 @@
 import { Router } from "jsr:@oak/oak";
 import nunjucks from "npm:nunjucks";
-import User from "../models/user.ts";
-import CalendarDatabase from "../models/calendarDatabase.ts";
-
-nunjucks.configure('', { noCache: true });
+import User from "../models/entities/user.ts";
+import UserDatabase from "../models/databases/userDatabase.ts";
 
 const router = new Router();
 
@@ -27,7 +25,7 @@ router.post("/login/", async (ctx) => {
     return;
   }
 
-  user.id = await CalendarDatabase.getUserId(user);
+  user.id = await UserDatabase.getUserId(user);
 
   if (user.id == 0) {
     ctx.response.body = nunjucks.render("./views/authentication/login.html", {
