@@ -1,17 +1,19 @@
 import { Router } from "jsr:@oak/oak";
 import nunjucks from "npm:nunjucks";
-import CalendarEvent from "../models/calendarEvent.ts";
-import CalendarDatabase from "../models/calendarDatabase.ts";
+import EventDatabase from "../models/databases/eventDatabase.ts";
 
 const router = new Router();
 
-router.get("/", (ctx) => {
-  const year = (new Date()).getUTCFullYear();
+router.get("/", async (ctx) => {
+  let year = new Date().getFullYear();
+  const yearsRange = await EventDatabase.getYearsRange();
+  year = Math.max(yearsRange.min, year);
+  year = Math.min(yearsRange.max, year);
   ctx.response.redirect(`/${year}/`);
 });
 
 router.get("/index.rss", async (ctx) => {
-  const calendarEvents = await CalendarDatabase.getRecentPastEvents(50);
+  const calendarEvents = await EventDatabase.getRecentPastEvents(50);
   ctx.response.body = nunjucks.render("./views/calendar/index.rss", {
     title: Deno.env.get("APP_NAME"),
     base_url: Deno.env.get("BASE_URL"),
@@ -21,22 +23,19 @@ router.get("/index.rss", async (ctx) => {
 
 router.get("/:year/", async (ctx, next) => {
   const year = Number(ctx.params.year);
-  const yearsRange = await CalendarDatabase.getMinMaxYears();
+  const yearsRange = await EventDatabase.getYearsRange();
 
-  if (isNaN(year)) {
+  if (isNaN(year) || year < yearsRange.min || year > yearsRange.max) {
     await next();
     return;
   }
-  if (year < yearsRange.min || year > yearsRange.max) return;
 
-  const calendarEvents: CalendarEvent[] = await CalendarDatabase.getEvents(
-    year,
-  );
+  const calendarEvents = await EventDatabase.getEvents(year);
   ctx.response.body = nunjucks.render("./views/calendar/list.html", {
     calendarEvents,
     year,
     yearsRange,
-    "currentUser": ctx.state.user,
+    currentUser: ctx.state.user,
   });
 });
 
