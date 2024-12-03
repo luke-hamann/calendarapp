@@ -1,10 +1,11 @@
 {
   "tasks": {
-    "dev": "deno run --watch --allow-env --allow-net --allow-read --allow-sys --env-file --unstable-kv main.ts"
+    "dev": "deno run --watch --allow-env --allow-net --allow-read --allow-sys --env-file main.ts"
   },
   "imports": {
     "@oak/oak": "jsr:@oak/oak@^17.1.3"
   },
+  "unstable": ["kv"],
   "fmt": {
     "exclude": ["views/**/*"]
   }

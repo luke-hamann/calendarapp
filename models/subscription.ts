@@ -10,9 +10,7 @@ export default class Subscription {
     this.url = url;
 
     if (secretToken == undefined) {
-      const buffer = new BigUint64Array(4);
-      crypto.getRandomValues(buffer);
-      this.secretToken = [...buffer].map(i => i.toString(16)).join("");
+      this.secretToken = crypto.randomUUID();
     } else {
       this.secretToken = secretToken;
     }

@@ -5,6 +5,16 @@ import Subscription from "./subscription.ts";
 import User from "./user.ts";
 
 export default abstract class CalendarDatabase {
+  // deno-lint-ignore no-explicit-any
+  private static convertRowToEvent(row: any): CalendarEvent {
+    return new CalendarEvent(
+      row["id"],
+      row["description"],
+      new Date(row["timestamp"] + " UTC"),
+      row["broadcast"]
+    );
+  }
+
   public static async getEvent(id: number): Promise<CalendarEvent> {
     const rows = await sql`
       SELECT id, description, timestamp, broadcast
@@ -14,13 +24,7 @@ export default abstract class CalendarDatabase {
 
     if (rows.length == 0) throw new Error("Event does not exist");
 
-    const row = rows[0];
-    return new CalendarEvent(
-      row["id"],
-      row["description"],
-      new Date(row["timestamp"]),
-      row["broadcast"],
-    );
+    return this.convertRowToEvent(rows[0]);
   }
 
   public static async getEvents(
@@ -37,14 +41,7 @@ export default abstract class CalendarDatabase {
       ORDER BY timestamp;
     `;
 
-    return rows.map((row) =>
-      new CalendarEvent(
-        row["id"],
-        row["description"],
-        new Date(row["timestamp"]),
-        row["broadcast"],
-      )
-    );
+    return rows.map((row) => this.convertRowToEvent(row));
   }
 
   public static async getRecentPastEvents(
@@ -58,14 +55,7 @@ export default abstract class CalendarDatabase {
       LIMIT ${maxCount};
     `;
 
-    return rows.map((row) =>
-      new CalendarEvent(
-        row["id"],
-        row["description"],
-        new Date(row["timestamp"]),
-        row["broadcast"],
-      )
-    );
+    return rows.map((row) => this.convertRowToEvent(row));
   }
 
   public static async addEvent(calendarEvent: CalendarEvent): Promise<void> {
@@ -74,7 +64,7 @@ export default abstract class CalendarDatabase {
         (description, timestamp, broadcast)
       VALUES (
         ${calendarEvent.description},
-        ${calendarEvent.timestamp},
+        ${calendarEvent.timestamp.toISOString()},
         ${calendarEvent.broadcast}
       )
     `;
@@ -84,7 +74,7 @@ export default abstract class CalendarDatabase {
     await sql`
       UPDATE Events
       SET description = ${calendarEvent.description},
-        timestamp = ${calendarEvent.timestamp},
+        timestamp = ${calendarEvent.timestamp.toISOString()},
         broadcast = ${calendarEvent.broadcast}
       WHERE id = ${calendarEvent.id}
     `;

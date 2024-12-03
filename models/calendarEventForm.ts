@@ -19,7 +19,16 @@ export default class CalendarEventForm {
     calendarEvent: CalendarEvent,
   ): CalendarEventForm {
     const form = new CalendarEventForm();
-    form.datetime = calendarEvent.timestamp.toISOString().slice(0, 19);
+
+    const t = calendarEvent.timestamp;
+    const y = t.getFullYear();
+    const m = (t.getMonth() + 1).toString().padStart(2, "0");
+    const d = t.getDay().toString().padStart(2, "0");
+    const h = t.getHours().toString().padStart(2, "0");
+    const i = t.getMinutes().toString().padStart(2, "0");
+    const s = t.getSeconds().toString().padStart(2, "0");
+    form.datetime = `${y}-${m}-${d}T${h}:${i}:${s}`;
+
     form.description = calendarEvent.description;
     form.broadcast = calendarEvent.broadcast;
     return form;
