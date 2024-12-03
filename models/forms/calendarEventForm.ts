@@ -1,9 +1,11 @@
-import CalendarEvent from "./calendarEvent.ts";
+import CalendarEvent from "../entities/calendarEvent.ts";
 
 export default class CalendarEventForm {
+  title: string = "";
+  action: string = "";
+
   id: number = 0;
   datetime: string = "";
-  time: string = "";
   description: string = "";
   broadcast: boolean = false;
 
@@ -35,20 +37,22 @@ export default class CalendarEventForm {
   }
 
   public getErrors(): string[] {
-    const errors: string[] = [];
+    const errors = [];
+
     if (this.datetime == "") {
       errors.push("Date/time is required.");
-    }
-    if (errors.length == 0) {
+    } else {
       try {
         new Date(this.datetime);
       } catch {
         errors.push("Invalid date.");
       }
     }
+
     if (this.description == "") {
       errors.push("Description is required.");
     }
+
     return errors;
   }
 
