@@ -1,5 +1,5 @@
 import { Context, Next } from "jsr:@oak/oak";
-import CalendarDatabase from "../models/calendarDatabase.ts";
+import UserDatabase from "../models/databases/userDatabase.ts";
 
 export default async (ctx: Context, next: Next) => {
   const kv = await Deno.openKv();
@@ -12,25 +12,25 @@ export default async (ctx: Context, next: Next) => {
     ctx.cookies.set("sessionId", sessionId, { expires });
     await kv.set([sessionId], 0);
   }
-  
+
   // Attempt to authenticate the user
-  let wasAuthenticated = false;
+  const userId = (await kv.get([sessionId])).value as (number | null) ?? 0;
   try {
-    const userId = (await kv.get([sessionId])).value as number;
-    ctx.state.user = await CalendarDatabase.getUser(userId);
-    wasAuthenticated = true;
+    ctx.state.user = await UserDatabase.getUser(userId);
   } catch {
     ctx.state.user = null;
   }
+  const wasAuthenticated = ctx.state.user != null;
 
+  // Pass through to the other controllers
   await next();
 
   // Logged out
   if (wasAuthenticated && ctx.state.user == null) {
     ctx.cookies.delete("sessionId");
     await kv.delete([sessionId]);
-  
-  // Logged in
+
+    // Logged in
   } else if (!wasAuthenticated && ctx.state.user != null) {
     await kv.set([sessionId], ctx.state.user!.id);
   }
