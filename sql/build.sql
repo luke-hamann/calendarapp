@@ -22,7 +22,7 @@ CREATE TABLE Subscriptions (
 
 CREATE TABLE Administrators (
   id bigint GENERATED ALWAYS AS IDENTITY,
-  name varchar(32) NOT NULL,
+  name varchar(32) NOT NULL UNIQUE,
   password varchar(100) NOT NULL
 );
 
