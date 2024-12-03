@@ -1,17 +1,19 @@
 import { Router } from "jsr:@oak/oak";
 import nunjucks from "npm:nunjucks";
-import CalendarEvent from "../models/calendarEvent.ts";
-import CalendarEventForm from "../models/calendarEventForm.ts";
-import CalendarDatabase from "../models/calendarDatabase.ts";
+import CalendarEventForm from "../models/forms/calendarEventForm.ts";
+import EventDatabase from "../models/databases/eventDatabase.ts";
 
 const router = new Router();
 
 router.get("/add/", (ctx) => {
   if (ctx.state.user == null) ctx.response.redirect("/login/");
 
+  const calendarEventForm = new CalendarEventForm();
+  calendarEventForm.title = "Add Event";
+  calendarEventForm.action = "/add/";
+
   ctx.response.body = nunjucks.render("./views/events/edit.html", {
-    title: "Add Event",
-    action: "/add/",
+    calendarEventForm,
     currentUser: ctx.state.user,
   });
 });
@@ -19,13 +21,13 @@ router.get("/add/", (ctx) => {
 router.post("/add/", async (ctx) => {
   if (ctx.state.user == null) ctx.response.redirect("/login/");
 
-  const params: URLSearchParams = await ctx.request.body.form();
+  const params = await ctx.request.body.form();
   const calendarEventForm = CalendarEventForm.fromParams(params);
+  calendarEventForm.title = "Add Event";
+  calendarEventForm.action = "/add/";
 
   if (!calendarEventForm.isValid()) {
     ctx.response.body = nunjucks.render("./views/events/edit.html", {
-      title: "Add Event",
-      action: "/add/",
       calendarEventForm,
       currentUser: ctx.state.user,
     });
@@ -33,28 +35,29 @@ router.post("/add/", async (ctx) => {
   }
 
   const calendarEvent = calendarEventForm.getCalendarEvent();
-  await CalendarDatabase.addEvent(calendarEvent);
-  ctx.response.redirect(`/${calendarEvent.timestamp.getUTCFullYear()}/`);
+  await EventDatabase.addEvent(calendarEvent);
+  ctx.response.redirect(`/${calendarEvent.timestamp.getFullYear()}/`);
 });
 
 router.get("/edit/:id/", async (ctx) => {
   if (ctx.state.user == null) ctx.response.redirect("/login/");
 
   const id = Number(ctx.params.id);
+  if (isNaN(id)) return;
 
-  let calendarEvent: CalendarEvent;
+  let calendarEvent;
   try {
-    calendarEvent = await CalendarDatabase.getEvent(id);
+    calendarEvent = await EventDatabase.getEvent(id);
   } catch {
     return;
   }
 
   const calendarEventForm = CalendarEventForm.fromCalendarEvent(calendarEvent);
+  calendarEventForm.title = "Edit Event";
+  calendarEventForm.action = `/edit/${id}/`;
 
   ctx.response.body = nunjucks.render("./views/events/edit.html", {
-    title: "Edit Event",
     calendarEventForm,
-    action: `/edit/${id}/`,
     currentUser: ctx.state.user,
   });
 });
@@ -62,40 +65,42 @@ router.get("/edit/:id/", async (ctx) => {
 router.post("/edit/:id/", async (ctx) => {
   if (ctx.state.user == null) ctx.response.redirect("/login/");
 
-  const id = Number(ctx.params.id ?? 0);
+  const id = Number(ctx.params.id);
+  if (isNaN(id)) return;
 
   try {
-    await CalendarDatabase.getEvent(id);
+    await EventDatabase.getEvent(id);
   } catch {
     return;
   }
 
   const params = await ctx.request.body.form();
   const calendarEventForm = CalendarEventForm.fromParams(params);
+  calendarEventForm.title = "Edit Event";
+  calendarEventForm.action = `/edit/${id}/`;
 
   if (!calendarEventForm.isValid()) {
     ctx.response.body = nunjucks.render("./views/events/edit.html", {
-      title: "Edit Event",
-      errors: calendarEventForm.getErrors(),
       calendarEventForm,
-      action: `/edit/${id}/`,
+      currentUser: ctx.state.user,
     });
   }
 
   const calendarEvent = calendarEventForm.getCalendarEvent();
   calendarEvent.id = id;
-  await CalendarDatabase.updateEvent(calendarEvent);
-  ctx.response.redirect(`/${calendarEvent.timestamp.getUTCFullYear()}/`);
+  await EventDatabase.updateEvent(calendarEvent);
+  ctx.response.redirect(`/${calendarEvent.timestamp.getFullYear()}/`);
 });
 
 router.get("/delete/:id/", async (ctx) => {
   if (ctx.state.user == null) ctx.response.redirect("/login/");
 
   const id = Number(ctx.params.id);
+  if (isNaN(id)) return;
 
-  let calendarEvent: CalendarEvent;
+  let calendarEvent;
   try {
-    calendarEvent = await CalendarDatabase.getEvent(id);
+    calendarEvent = await EventDatabase.getEvent(id);
   } catch {
     return;
   }
@@ -110,14 +115,16 @@ router.post("/delete/:id/", async (ctx) => {
   if (ctx.state.user == null) ctx.response.redirect("/login/");
 
   const id = Number(ctx.params.id);
+  if (isNaN(id)) return;
 
-  let calendarEvent: CalendarEvent;
+  let calendarEvent;
   try {
-    calendarEvent = await CalendarDatabase.getEvent(id);
+    calendarEvent = await EventDatabase.getEvent(id);
   } catch {
     return;
   }
-  await CalendarDatabase.deleteEvent(calendarEvent);
+
+  await EventDatabase.deleteEvent(calendarEvent);
   ctx.response.redirect("/");
 });
 
