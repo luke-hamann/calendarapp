@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
-  <title>Calendar</title>
-  <link>http://localhost:8080/</link>
+  <title>{{ title }}</title>
+  <link>{{ base_url }}/</link>
   <description>Recent past events</description>
   {% for calendarEvent in calendarEvents %}
     <item>
       <title>{{ calendarEvent.description }}</title>
-      <link>http://localhost:8080/{{ calendarEvent.timestamp.getUTCFullYear() }}/</link>
-      <pubDate>{{ calendarEvent.timestamp.toUTCString() }}</pubDate>
+      <link>{{ base_url }}/{{ calendarEvent.timestamp.getFullYear() }}/</link>
+      <pubDate>{{ calendarEvent.timestamp }}</pubDate>
     </item>
   {% endfor %}
 </channel>

@@ -13,6 +13,8 @@ router.get("/", (ctx) => {
 router.get("/index.rss", async (ctx) => {
   const calendarEvents = await CalendarDatabase.getRecentPastEvents(50);
   ctx.response.body = nunjucks.render("./views/calendar/index.rss", {
+    title: Deno.env.get("APP_NAME"),
+    base_url: Deno.env.get("BASE_URL"),
     calendarEvents,
   });
 });
