@@ -1,5 +1,6 @@
 import { Router } from "jsr:@oak/oak";
 import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
+import Message from "../models/entities/message.ts";
 
 const router = new Router();
 
@@ -24,7 +25,10 @@ router.get("/notifications/", async (ctx) => {
   while (running) {
     await channel.consume({}, (_args, _props, data) => {
       const json = JSON.parse(new TextDecoder().decode(data));
-      target.dispatchMessage(json["eventDescription"]);
+      const message = Message.fromJSON(json);
+      target.dispatchMessage(
+        `${message.eventDescription} (${message.eventTimestamp.toLocaleString()})`,
+      );
     });
   }
 
