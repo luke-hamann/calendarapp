@@ -20,7 +20,9 @@
     "Helvetica Neue",
     sans-serif;
 
-  --light-bg: lightgreen;
+  --background-light: lightgreen;
+  --background-dark: green;
+  --center-width: 50rem;
 }
 
 /* Sticky footer */
@@ -35,24 +37,33 @@ main {
   flex-grow: 1;
 }
 
-/* headings */
+/* Text */
 
-header {
-  position: sticky;
-  top: 0;
+.text-center {
+  text-align: center;
 }
 
-.header-year {
+/* Headings */
+
+h1, h2 {
+  padding: 1rem;
+}
+
+/* Header */
+
+header {
+  background-color: var(--background-light);
   position: sticky;
-  top: 3rem;
+  top: 0;
 }
 
 /* Navbar */
 
 .navbar-list {
-  background-color: var(--light-bg);
   display: flex;
-  list-style: none;
+  list-style-type: none;
+  margin: 0 auto;
+  max-width: var(--center-width);
   overflow-y: auto;
   user-select: none;
 
@@ -61,24 +72,20 @@ header {
   }
 
   .navbar-button {
-    color: black;
-    text-decoration: none;
-    display: block;
-    padding: 1rem;
     background-color: transparent;
     border: none;
+    color: black;
+    display: block;
     font-size: initial;
     height: 100%;
+    padding: 1rem;
+    text-decoration: none;
 
     &:hover {
-      background-color: green;
+      background-color: var(--background-dark);
       color: white;
     }
   }
-}
-
-.margin-left {
-  margin-left: 1rem;
 }
 
 /* Forms */
@@ -89,9 +96,9 @@ header {
   align-items: center;
 
   .form {
-    flex-basis: 30rem;
-    padding: 1rem;
-    max-width: 20rem;
+    flex-basis: 25rem;
+    max-width: 25rem;
+    padding: 1rem 1rem 2rem;
 
     h1 {
       text-align: center;
@@ -108,8 +115,8 @@ header {
 
     label, input, button {
       display: block;
-      padding: 1rem;
       margin: 1rem 0;
+      padding: 1rem;
       width: 100%;
     }
 
@@ -124,21 +131,15 @@ header {
   }
 }
 
-/* Headings */
-
-h1, h2 {
-  padding: 1rem;
-}
-
 /* Buttons */
 
 .btn {
   border: none;
   border-radius: 5pt;
   display: inline-block;
+  font-size: initial;
   padding: 1rem;
   text-decoration: none;
-  font-size: initial;
 }
 
 .btn-red {
@@ -166,11 +167,13 @@ h1, h2 {
   color: black;
 }
 
-/* Calendar year list */
+/* Calendar list view */
 
-.calendar-years {
+.list-horizontal {
   display: flex;
-  list-style: none;
+  list-style-type: none;
+  margin: 0 auto;
+  max-width: var(--center-width);
   overflow-x: auto;
 
   & > * > * {
@@ -179,17 +182,20 @@ h1, h2 {
   }
 }
 
-@media (max-width: 50rem) {
-  .event-container {
-    flex-direction: column;
+.calendar-list {
+  margin: 0 auto;
+  max-width: 50rem;
+
+  h1, h2 {
+    text-align: center;
   }
 }
 
 .event-container {
-  display: flex;
-  margin: 1rem;
   border: 1px solid;
   border-radius: 5pt;
+  display: flex;
+  margin: 1rem;
 
   .date, .description, .controls {
     padding: 1rem;
@@ -214,10 +220,16 @@ h1, h2 {
   }
 }
 
+@media (max-width: 50rem) {
+  .event-container {
+    flex-direction: column;
+  }
+}
+
 /* Footer */
 
 footer {
+  background-color: var(--background-light);
   padding: 2rem;
   text-align: center;
-  background-color: var(--light-bg);
 }
