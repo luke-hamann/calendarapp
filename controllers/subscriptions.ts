@@ -23,24 +23,23 @@ router.post("/subscribe/", async (ctx) => {
     /^https:\/\/discord\.com\/api\/webhooks\/\d{19}\/[\w\d-]{68}$/,
   );
 
-  let error;
+  const errors = [];
   if (type == "email" && !emailPattern.test(target)) {
-    error = "Invalid email address.";
+    errors.push("Invalid email address.");
   } else if (type == "discord" && !discordPattern.test(target)) {
-    error = "Invalid Discord webhook.";
+    errors.push("Invalid Discord webhook.");
   }
 
-  if (error) {
+  if (errors.length > 0) {
     ctx.response.body = nunjucks.render(
       "./views/subscriptions/subscribe.html",
-      { error, currentUser: ctx.state.user },
+      { errors, currentUser: ctx.state.user },
     );
+    return;
   }
-
-  const subscription = new Subscription(0, type, target);
-  if (type == "discord") {
-    subscription.secretToken = target;
-  }
+  
+  const secretToken = type == "discord" ? target : undefined;
+  const subscription = new Subscription(0, type, target, secretToken);
 
   await SubscriptionDatabase.addSubscription(subscription);
   ctx.response.body = nunjucks.render(
