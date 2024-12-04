@@ -12,11 +12,11 @@ async function handler(message: Message): Promise<void> {
     }/unsubscribe/?token=${message.subscriptionSecretToken}\n\n`;
 
   const payload = {
-    "From": Deno.env.get("EMAIL_USER"),
-    "To": message.subscriptionTarget,
-    "Subject": "[Coolander] " + message.eventDescription,
-    "MessageStream": "broadcast",
-    "TextBody": text,
+    From: Deno.env.get("EMAIL_USER"),
+    To: message.subscriptionTarget,
+    Subject: "[Coolander] " + message.eventDescription,
+    MessageStream: "broadcast",
+    TextBody: text,
   };
 
   if (!EMAIL_ENABLED) {
