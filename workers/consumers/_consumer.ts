@@ -1,32 +1,29 @@
 import { connect } from "https://deno.land/x/amqp@v0.24.0/mod.ts";
-import Message from "./message.ts";
+import Message from "../../models/entities/message.ts";
 
 export default class Consumer {
-  queueName: string;
-  handler: (m: Message) => Promise<void>;
+  _queueName: string;
+  _handler: (m: Message) => Promise<void>;
 
   constructor(queueName: string, handler: (m: Message) => Promise<void>) {
-    this.queueName = queueName;
-    this.handler = handler;
+    this._queueName = queueName;
+    this._handler = handler;
   }
 
   async run() {
-    // deno-lint-ignore no-var
-    var running: boolean = true;
-    // deno-lint-ignore no-unused-vars
-    const onmessage = (signal: boolean) => running = signal;
-
+    // Connect to the queue
     const connection = await connect();
     const channel = await connection.openChannel();
-    await channel.declareQueue({ queue: this.queueName });
+    await channel.declareQueue({ queue: this._queueName });
 
-    while (running) {
+    while (true) {
+      // Pass messages from the queue to the handler
       await channel.consume(
-        { queue: this.queueName },
+        { queue: this._queueName },
         async (args, _props, data) => {
           const json = JSON.parse(new TextDecoder().decode(data));
           const message = Message.fromJSON(json);
-          await this.handler(message);
+          await this._handler(message);
           await channel.ack({ deliveryTag: args.deliveryTag });
         },
       );
