@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock %}</title>
     <link rel="icon" href="/img/icon.png" type="image/png" />
     <link rel="stylesheet" href="/css/main.css" />
@@ -15,7 +15,7 @@
           <li><a href="/" class="navbar-button">Calendar</a></li>
           <li><a href="/subscribe/" class="navbar-button">Subscribe</a></li>
           <li><a href="/unsubscribe/" class="navbar-button">Unsubscribe</a></li>
-          <li id="web-push-toggle" class="navbar-button">Push OFF</li>
+          <li id="web-push-toggle" class="navbar-button">Push&nbsp;OFF</li>
           {% if currentUser %}
             <li>
               <form action="/logout/" method="post">
