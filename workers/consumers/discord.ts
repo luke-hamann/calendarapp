@@ -1,31 +1,32 @@
-import Consumer from "../../models/consumer.ts";
-import Message from "../../models/message.ts";
-import Subscription from "../../models/subscription.ts";
-import CalendarDatabase from "../../models/calendarDatabase.ts";
+import Consumer from "./_consumer.ts";
+import Message from "../../models/entities/message.ts";
+import Subscription from "../../models/entities/subscription.ts";
+import SubscriptionDatabase from "../../models/databases/subscriptionDatabase.ts";
 
 const DISCORD_ENABLED = Deno.env.get("DISCORD_ENABLED") == "true";
 
 async function handler(message: Message): Promise<void> {
-  const url = message.subscriptionUrl;
+  const url = message.subscriptionTarget;
 
   const payload = {
-    username: "Coolander",
+    username: Deno.env.get("APP_NAME"),
     avatar_url: Deno.env.get("DISCORD_AVATAR_URL"),
     content: null,
     embeds: [{
       title: message.eventDescription,
-      description: message.eventTimestamp.toLocaleString() + '\n\n' +
-        `[View in calendar]` +
-        `(${Deno.env.get("BASE_URL")}/${message.eventTimestamp.getUTCFullYear()}/)`
-    }]
+      description:
+        `${message.eventTimestamp.toLocaleString()}\n\n[View in calendar](${
+          Deno.env.get("BASE_URL")
+        }/${message.eventTimestamp.getFullYear()}/)`,
+    }],
   };
 
   if (!DISCORD_ENABLED) {
     console.log(payload);
     return;
   }
-  
-  let response = { status: 0 };
+
+  let response;
   try {
     response = await fetch(url, {
       method: "POST",
@@ -34,11 +35,14 @@ async function handler(message: Message): Promise<void> {
       },
       body: JSON.stringify(payload),
     });
-  } catch {}
+  } catch (e) {
+    console.log(e);
+  }
 
-  // Delete the subscription if we know it failed
-  if (response.status > 0 && response.status != 204) {
-    await CalendarDatabase.deleteSubscription(new Subscription(0, "discord", url, url));
+  if (response && response.status != 204) {
+    await SubscriptionDatabase.deleteSubscription(
+      new Subscription(message.subscriptionId, "discord", url, url),
+    );
   }
 }
 
