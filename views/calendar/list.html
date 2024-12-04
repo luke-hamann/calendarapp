@@ -1,36 +1,43 @@
 {% extends '../_shared/_base.html' %}
 
-{% block title %}Calendar{% endblock %}
+{% block title %}{{ year }}{% endblock %}
 
 {% block content %}
-  <ul class="calendar-years">
-    {% for y in range(yearsRange.min, yearsRange.max) %}
-      <li>
-        <a href="/{{ y }}/">{{ y }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-  <ul class="calendar-years">
-    {% for m in ["January", "February", "March", "April", "May", "June",
-                 "July", "August", "September", "October", "November", "December"] %}
-      <li>
-        <a href="#{{ m.toLowerCase() }}">{{ m }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-  <h1 class="heading-year">
-    {{ year }}
-  </h1>
-  {% if currentUser %}
-    <div>
-      <a href="/add/" class="btn btn-blue margin-left">
-        &plus; Add Event
-      </a>
-    </div>
-  {% endif %}
-  {% if calendarEvents.length > 0 %}
-    {% set months = ["January", "February", "March", "April", "May", "June",
-                     "July", "August", "September", "October", "November", "December"] %}
+  {% set months = ["January", "February", "March", "April", "May", "June",
+                   "July", "August", "September", "October", "November", "December"] %}
+  <nav>
+    <ul class="list-horizontal">
+      {% for y in range(yearsRange.min, yearsRange.max + 1) %}
+        <li><a href="/{{ y }}/">{{ y }}</a></li>
+      {% endfor %}
+    </ul>
+    <ul class="list-horizontal">
+      {% for m in months %}
+        <li><a href="#{{ m.toLowerCase() }}">{{ m }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+  <div class="calendar-list">
+    <h1 class="heading-year">
+      {% if year > yearsRange.min %}
+        <a href="/{{ year - 1 }}/">&lt;</a>
+      {% else %}
+        &lt;
+      {% endif %}
+      {{ year }}
+      {% if year < yearsRange.max %}
+        <a href="/{{ year + 1 }}/">&gt;</a>
+      {% else %}
+        &gt;
+      {% endif %}
+    </h1>
+    {% if currentUser %}
+      <div class="text-center">
+        <a href="/add/" class="btn btn-blue">
+          &plus; Add Event
+        </a>
+      </div>
+    {% endif %}
     {% set month = -1 %}
     {% for calendarEvent in calendarEvents %}
       {% if calendarEvent.timestamp.getMonth() > month %}
@@ -57,5 +64,5 @@
         {% endif %}
       </div>
     {% endfor %}
-  {% endif %}
+  </div>
 {% endblock %}
