@@ -25,7 +25,7 @@ export default class CalendarEventForm {
     const t = calendarEvent.timestamp;
     const y = t.getFullYear();
     const m = (t.getMonth() + 1).toString().padStart(2, "0");
-    const d = t.getDay().toString().padStart(2, "0");
+    const d = t.getDate().toString().padStart(2, "0");
     const h = t.getHours().toString().padStart(2, "0");
     const i = t.getMinutes().toString().padStart(2, "0");
     const s = t.getSeconds().toString().padStart(2, "0");
