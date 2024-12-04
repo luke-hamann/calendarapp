@@ -54,8 +54,7 @@ export default abstract class SubscriptionDatabase {
   ): Promise<void> {
     await sql`
       DELETE FROM Subscriptions
-      WHERE id = ${subscription.id} OR
-        target = ${subscription.target}
+      WHERE id = ${subscription.id}
     `;
   }
 }
