@@ -43,7 +43,7 @@ export default class Message {
     return new Message(
       json.eventId,
       json.eventDescription,
-      new Date(json.eventTimestamp + " UTC"),
+      new Date(json.eventTimestamp),
       json.eventBroadcast,
       json.subscriptionId,
       json.subscriptionType,
