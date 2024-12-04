@@ -41,7 +41,7 @@ async function handler(message: Message): Promise<void> {
 
   if (response && response.status != 204) {
     await SubscriptionDatabase.deleteSubscription(
-      new Subscription(message.subscriptionId, "discord", url, url),
+      new Subscription(message.subscriptionId, "", "", ""),
     );
   }
 }
