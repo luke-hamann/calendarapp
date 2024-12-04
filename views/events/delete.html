@@ -7,11 +7,11 @@
     <form action="/delete/{{ calendarEvent.id }}/" method="post" class="form">
       <h1>Confirm Deletion</h1>
       <div>
-        Are you sure?
+        Are you sure you want to delete "{{ calendarEvent.description }}"?
       </div>
       <div>
         <input type="submit" value="Yes" class="btn btn-red" />
-        <a href="/{{ calendarEvent.timestamp.getUTCFullYear() }}/"
+        <a href="/{{ calendarEvent.timestamp.getFullYear() }}/"
           class="btn btn-cancel">Cancel</a>
       </div>
     </form>
