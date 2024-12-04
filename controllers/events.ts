@@ -14,6 +14,7 @@ router.get("/add/", (ctx) => {
 
   ctx.response.body = nunjucks.render("./views/events/edit.html", {
     calendarEventForm,
+    ignoreErrors: true,
     currentUser: ctx.state.user,
   });
 });
