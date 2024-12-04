@@ -16,7 +16,7 @@ export default abstract class MessageDatabase {
   public static async *getUnpublishedMessages(
     date: Date,
   ): AsyncGenerator<Message> {
-    const seconds = Math.round(date.getTime() / 1000);
+    const epoch = Math.round(date.getTime() / 1000);
     const query = sql`
       SELECT
         Events.id eventId,
@@ -28,7 +28,7 @@ export default abstract class MessageDatabase {
         Subscriptions.target subscriptionTarget,
         Subscriptions.secretToken subscriptionSecretToken
       FROM Events, Subscriptions
-      WHERE Events.timestamp <= to_timestamp(${seconds}) AND
+      WHERE extract(epoch from Events.timestamp) <= ${epoch} AND
         Events.broadcast = true
       UNION
       SELECT
@@ -41,7 +41,7 @@ export default abstract class MessageDatabase {
         '' subscriptionTarget,
         '' subscriptionSecretToken
       FROM Events
-      WHERE Events.timestamp <= to_timestamp(${seconds}) AND
+      WHERE extract(epoch from Events.timestamp) <= ${epoch} AND
         Events.broadcast = true
     `;
 
