@@ -1,14 +1,12 @@
 {% extends '../_shared/_base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ calendarEventForm.title }}{% endblock %}
 
 {% block content %}
   <div class="form-wrapper">
-    <form action="{{ action }}" method="post" class="form">
-      <h1>
-        {{ title }}
-      </h1>
-      {% if calendarEventForm and not calendarEventForm.isValid() %}
+    <form action="{{ calendarEventForm.action }}" method="post" class="form">
+      <h1>{{ calendarEventForm.title }}</h1>
+      {% if not ignoreErrors and not calendarEventForm.isValid() %}
         <ul class="form-errors">
           {% for error in calendarEventForm.getErrors() %}
             <li>{{ error }}</li>
@@ -16,25 +14,19 @@
         </ul>
       {% endif %}
       <div>
-        <label for="datetime">
-          Date/Time
-        </label>
+        <label for="datetime">Date/Time</label>
         <input type="datetime-local" name="datetime" id="datetime"
-          step="1" value="{{ calendarEventForm.datetime }}"/>
+          step="1" value="{{ calendarEventForm.datetime }}" />
       </div>
       <div>
-        <label for="description">
-          Description
-        </label>
+        <label for="description">Description</label>
         <input type="text" name="description" id="description"
           value="{{ calendarEventForm.description }}" />
       </div>
       <div class="broadcast-checkbox">
         <input type="checkbox" name="broadcast" id="broadcast"
           {% if calendarEventForm.broadcast %}checked{% endif %} />
-        <label for="broadcast">
-          Broadcast
-        </label>
+        <label for="broadcast">Broadcast</label>
       </div>
       <div>
         <input type="submit" value="Submit" class="btn btn-green" />
