@@ -37,7 +37,7 @@ router.post("/subscribe/", async (ctx) => {
     );
     return;
   }
-  
+
   const secretToken = type == "discord" ? target : undefined;
   const subscription = new Subscription(0, type, target, secretToken);
 
