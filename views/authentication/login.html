@@ -14,7 +14,7 @@
         </ul>
       {% endif %}
       <div>
-        <input type="text" name="name" id="name" placeholder="Name"
+        <input type="text" name="name" id="name" placeholder="Name" autocomplete="off"
           value="{% if user %}{{ user.name }}{% endif %}" />
       </div>
       <div>
