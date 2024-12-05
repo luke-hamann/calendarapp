@@ -202,7 +202,7 @@ header {
   }
 
   .date {
-    flex-grow: 0;
+    width: 25%;
   }
 
   .description {
@@ -223,6 +223,10 @@ header {
 @media (max-width: 50rem) {
   .event-container {
     flex-direction: column;
+
+    .date {
+      width: auto;
+    }
   }
 }
 
