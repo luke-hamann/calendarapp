@@ -13,7 +13,7 @@
     </ul>
     <ul class="list-horizontal">
       {% for m in months %}
-        <li><a href="#{{ m.toLowerCase() }}">{{ m }}</a></li>
+        <li><a href="#{{ m.toLowerCase() }}">{{ m.slice(0, 3) }}</a></li>
       {% endfor %}
     </ul>
   </nav>
