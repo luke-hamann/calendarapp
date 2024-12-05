@@ -24,20 +24,21 @@ const enableWebPush = () => {
 };
 
 button.addEventListener("click", () => {
-  console.log("Toggle...");
   if (isWebPushEnabled()) disableWebPush();
   else enableWebPush();
 });
 
 if (isWebPushEnabled()) enableWebPush();
 
-// Start listening for notifications
 const eventSource = new EventSource("/notifications/");
-eventSource.onmessage = (event) => {
-  console.log(event.data);
 
+// Start listening for notifications
+eventSource.onmessage = (event) => {
   if (hasPermission() && isWebPushEnabled()) {
-    console.log("Pushing...");
     new Notification("Coolander", { body: event.data, icon: "/img/icon.png" });
   }
+};
+
+window.onbeforeunload = () => {
+  eventSource.close();
 };
