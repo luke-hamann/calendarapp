@@ -14,6 +14,7 @@ router.get("/", async (ctx) => {
 
 router.get("/index.rss", async (ctx) => {
   const calendarEvents = await EventDatabase.getRecentPastEvents(50);
+  ctx.response.type = "application/rss+xml";
   ctx.response.body = nunjucks.render("./views/calendar/index.rss", {
     title: Deno.env.get("APP_NAME"),
     base_url: Deno.env.get("BASE_URL"),
