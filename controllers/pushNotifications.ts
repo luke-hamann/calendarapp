@@ -17,22 +17,24 @@ router.get("/notifications/", async (ctx) => {
   });
   await channel.bindQueue({ exchange: "pushExchange" });
 
-  let running = true;
-  target.addEventListener("close", () => {
-    running = false;
+  target.addEventListener("close", async () => {
+    await connection.close();
   });
 
+  let running = true;
   while (running) {
-    await channel.consume({}, (_args, _props, data) => {
-      const json = JSON.parse(new TextDecoder().decode(data));
-      const message = Message.fromJSON(json);
-      target.dispatchMessage(
-        `${message.eventDescription} (${message.eventTimestamp.toLocaleString()})`,
-      );
-    });
+    try {
+      await channel.consume({}, (_args, _props, data) => {
+        const json = JSON.parse(new TextDecoder().decode(data));
+        const message = Message.fromJSON(json);
+        target.dispatchMessage(
+          `${message.eventDescription} (${message.eventTimestamp.toLocaleString()})`,
+        );
+      });
+    } catch {
+      running = false;
+    }
   }
-
-  await connection.close();
 });
 
 export default router;
