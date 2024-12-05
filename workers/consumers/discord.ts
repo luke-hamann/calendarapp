@@ -14,10 +14,9 @@ async function handler(message: Message): Promise<void> {
     content: null,
     embeds: [{
       title: message.eventDescription,
-      description:
-        `${message.eventTimestamp.toLocaleString()}\n\n[View in calendar](${
-          Deno.env.get("BASE_URL")
-        }/${message.eventTimestamp.getFullYear()}/)`,
+      description: `${message.eventTimestamp.toLocaleString()}\n\n` +
+        `[View in calendar](${Deno.env.get("BASE_URL")}/` +
+        `${message.eventTimestamp.getFullYear()}/)`,
     }],
   };
 
