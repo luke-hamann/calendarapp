@@ -58,7 +58,7 @@ export default abstract class EventDatabase {
     const rows = await sql`
       SELECT id, description, timestamp, broadcast
       FROM Events
-      WHERE timestamp < NOW()
+      WHERE extract(epoch from timestamp) <= extract(epoch from NOW())
       ORDER BY timestamp DESC
       LIMIT ${maxCount};
     ` as CalendarEventRow[];
