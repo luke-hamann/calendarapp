@@ -147,6 +147,11 @@ header {
   color: white;
 }
 
+.btn-orange {
+  background-color: rgb(255, 153, 0);
+  color: black;
+}
+
 .btn-yellow {
   background-color: yellow;
   color: black;
